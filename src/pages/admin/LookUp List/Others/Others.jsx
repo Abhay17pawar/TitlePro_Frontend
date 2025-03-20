@@ -4,6 +4,8 @@ import Jobtitle from './Jobtitle';
 import OutBy from './OutBy';
 import TagGroup from './TagGroup';
 import UserGroupType from './UserGroupType';
+import State from './State';
+import County from './County';
 
 const Others = () => {
   return (
@@ -15,6 +17,8 @@ const Others = () => {
             <OutBy/>
             <TagGroup/>
             <UserGroupType/>
+            <State/>
+            <County/>
           </div>
     </>
   )
