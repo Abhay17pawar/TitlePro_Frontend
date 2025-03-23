@@ -87,7 +87,8 @@ const OrdersTable = () => {
         <Col md={6} lg={8} className="d-flex justify-content-md-end gap-2">
           <Button
             className="d-flex align-items-center gap-1"
-            style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}            onClick={() => setIsOpen(true)} 
+            style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  
+            onClick={() => setIsOpen(true)} 
           >
             <FileText size={18} />
             <span>Create Order</span>
@@ -108,17 +109,17 @@ const OrdersTable = () => {
         <Table className="table" style={{ width: "100%" }}>
           <thead>
             <tr>
-              <th className="bg-info text-white fw-normal">Arrival Date</th>
-              <th className="bg-info text-white fw-normal">Delivery Date</th>
-              <th className="bg-info text-white fw-normal">Order Number</th>
-              <th className="bg-info text-white fw-normal">Customer</th>
-              <th className="bg-info text-white fw-normal">Priority</th>
-              <th className="bg-info text-white fw-normal">Transaction Type</th>
-              <th className="bg-info text-white fw-normal">Data Source</th>
-              <th className="bg-info text-white fw-normal">State</th>
-              <th className="bg-info text-white fw-normal">County</th>
-              <th className="bg-info text-white fw-normal">Active Workflow</th>
-              <th className="bg-info text-white fw-normal">Assigned To</th>
+              <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Arrival Date</th>
+              <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal" >Delivery Date</th>
+              <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Order Number</th>
+              <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Customer</th>
+              <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Priority</th>
+              <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Transaction Type</th>
+              <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Data Source</th>
+              <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">State</th>
+              <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">County</th>
+              <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Active Workflow</th>
+              <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Assigned To</th>
             </tr>
           </thead>
           <tbody>
@@ -147,7 +148,8 @@ const OrdersTable = () => {
           <ul className="pagination justify-content-center">
             <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
               <button
-                className="page-link text-info"
+                style={{ color: '#5AC0F2' }}
+                className="page-link"
                 onClick={() => setCurrentPage(currentPage - 1)}
               >
                 <ChevronLeft size={16} />
@@ -155,22 +157,24 @@ const OrdersTable = () => {
             </li>
             {[...Array(totalPages)].map((_, index) => (
               <li key={index} className="page-item">
-                <button
+                <button 
                   className={`page-link ${currentPage === index + 1 ? "bg-info text-white" : "text-info"}`}
+                  style={{background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}
                   onClick={() => setCurrentPage(index + 1)}
                 >
                   {index + 1}
                 </button>
               </li>
             ))}
-            <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
-              <button
-                className="page-link text-info"
-                onClick={() => setCurrentPage(currentPage + 1)}
-              >
-                <ChevronRight size={16} />
-              </button>
-            </li>
+           <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+            <button
+              style={{ color: '#5AC0F2' }}  
+              className="page-link"
+              onClick={() => setCurrentPage(currentPage + 1)}
+            >
+              <ChevronRight size={16} />
+            </button>
+          </li>
           </ul>
         </nav>
           <OrderPageModal isOpen={isOpen} setIsOpen={setIsOpen} onSubmit={handleAddOrder} />

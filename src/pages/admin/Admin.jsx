@@ -173,7 +173,7 @@ const Admin = () => {
               <div className="card-body p-0">
                 <ul className="list-group list-group-flush">
                   <li style={{cursor: 'pointer'}}
-                    onClick={() => navigate('/lookuplist-transaction-type')}
+                    onClick={() => navigate('/transaction-type')}
                    className="list-group-item d-flex justify-content-between align-items-center">
                     Transaction Types <ChevronRight size={16} />
                   </li>

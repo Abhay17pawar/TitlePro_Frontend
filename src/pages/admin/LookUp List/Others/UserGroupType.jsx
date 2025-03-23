@@ -4,6 +4,7 @@ import { FaExclamation } from "react-icons/fa";
 import "../Order/scroller.css";
 import { FaRegPenToSquare } from 'react-icons/fa6';
 import { RiDeleteBin6Line } from 'react-icons/ri';
+import { Smile } from 'lucide-react';
 
 const UserGroupType = () => {
   const UserGroupType = [
@@ -27,13 +28,19 @@ const UserGroupType = () => {
               {UserGroupType.map((title, index) => (
                 <li key={index} className="list-group-item d-flex align-items-center text-muted">
                   <div className="d-flex align-items-center">
-                    <MdOutlineCircle className="text-primary me-2" size={16} fill="#0d6efd" />
-                    {title}
+                  <Smile className="text-info me-2" size={16} />
+                  {title}
                   </div>
-                  <div className="d-flex align-items-center ms-auto" style={{ cursor: 'pointer' }}>
-                    <FaRegPenToSquare className="me-2" />
-                    <RiDeleteBin6Line />
-                  </div>
+                 <div className="d-flex align-items-center ms-auto">
+                       <div className="d-flex justify-content-center align-items-center p-2 bg-primary bg-opacity-10 text-primary me-2 rounded-2" 
+                           style={{ cursor: 'pointer', width: '1.75rem', height: '1.75rem' }}>
+                         <FaRegPenToSquare />
+                       </div>
+                       <div className="d-flex justify-content-center align-items-center p-2 bg-danger bg-opacity-10 text-danger rounded-2" 
+                           style={{ cursor: 'pointer', width: '1.75rem', height: '1.75rem' }}>
+                         <RiDeleteBin6Line />
+                       </div>
+                     </div>
                 </li>
               ))}
             </ul>

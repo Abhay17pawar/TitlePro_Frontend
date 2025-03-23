@@ -18,6 +18,7 @@ import OrderTask from "./pages/order/orderTask/OrderTask";
 import DeletedContactTable from "./pages/contact/DeletedContact";
 import LookupList from "./pages/admin/LookUp List/LookupList";
 import TransactionType from "./pages/admin/Order Settings/TransactionType";
+import ProductType from "./pages/admin/Order Settings/ProductType";
 
 const App = () => {
   return (
@@ -44,7 +45,7 @@ const App = () => {
         <Route path="/lookuplist-data-access" element={<LookupList />} />
         <Route path="/lookuplist-worksheet" element={<LookupList />} />
         <Route path="/lookuplist-accounting" element={<LookupList />} />
-        <Route path="/lookuplist-transaction-type" element={<TransactionType />} />
+        <Route path="/transaction-type" element={<TransactionType />} />
       </Routes>
       <ToastContainer />
     </Router>

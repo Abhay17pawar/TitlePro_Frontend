@@ -1,21 +1,62 @@
+import { useEffect, useState } from "react";
 import { Modal, Form, Button } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import axios from "axios"; 
+import Select from "react-select";
+import axios from "axios";
 
 const TransactionTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
   const { control, handleSubmit, reset, formState: { errors } } = useForm();
+  const [productOptions, setProductOptions] = useState([]); // Store products
+  const [selectedProduct, setSelectedProduct] = useState(null); // Store selected product
 
+  // Fetch product types when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      axios.get(`${import.meta.env.VITE_API_URL}/products`)
+        .then(response => {
+          const productsArray = response.data?.data || []; // Ensure correct array
+          const products = productsArray.map(product => ({
+            value: product.id,  // Store product ID
+            label: product.product_name // Store product name
+          }));
+
+          setProductOptions(products);
+          console.log("Fetched Products:", products); // ✅ Debugging log
+        })
+        .catch(error => {
+          console.error("Error fetching products:", error);
+          toast.error("Failed to fetch product types.");
+        });
+    }
+  }, [isOpen]);
+
+  // Handle form submission
   const handleFormSubmit = async (data) => {
     try {
-      const token = localStorage.getItem('token');
-      
+      if (!selectedProduct) {
+        toast.error("Please select a product type.");
+        return;
+      }
+
+      console.log("Selected Product:", selectedProduct); // ✅ Debugging log
+
+      const requestData = {
+        product_name: selectedProduct.label,  // ✅ Sending product name
+        transaction_name: data.transaction_type, // ✅ Sending transaction type
+        productId: selectedProduct.value,  // ✅ Sending product ID
+      };
+
+      console.log("Request Data:", requestData); // ✅ Log the request before sending
+
+      const token = localStorage.getItem("token");
       if (!token) {
         console.error("No token found, please log in.");
         toast.error("No token found, please log in.", { autoClose: 1500 });
-        return false;
+        return;
       }
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}`, data, {
+
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/transactions`, requestData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -23,52 +64,45 @@ const TransactionTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
       });
 
       const result = response.data;
-
       if (result.success) {
-        toast.success("Contact Type added successfully!", { autoClose: 1500 });
-        onSubmit(result.data);
+        toast.success("Transaction Type added successfully!", { autoClose: 1500 });
+        onSubmit(requestData);
         setIsOpen(false);
         reset();
+        setSelectedProduct(null); // ✅ Reset selected product
       } else {
-        toast.error(result.message || "Failed to add contact type.");
+        toast.error(result.message || "Failed to add transaction type.");
       }
     } catch (error) {
-      toast.error("An error occurred while adding contact type.");
+      console.error("Error submitting transaction:", error); // ✅ Log detailed error
+      toast.error("An error occurred while adding transaction type.");
     }
   };
 
   return (
     <Modal show={isOpen} onHide={() => setIsOpen(false)} size="sm" centered>
       <Modal.Header closeButton>
-      <Modal.Title className="h6">Add Transaction Types</Modal.Title>
+        <Modal.Title className="h6">Add Transaction Types</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit(handleFormSubmit)}>
-          <Form.Group controlId="formContactType" className="mb-3">
-            <Form.Label className="text-muted">Product Type</Form.Label>
-            <Controller
-              name="product_type"
-              control={control}
-              rules={{ required: "Product Type is required" }}
-              render={({ field }) => (
-                <>
-                  <Form.Control
-                    type="text"
-                    {...field}
-                    value={field.value || ''}  // Ensure the value is always a defined string
-                    isInvalid={!!errors.product_type}
-                  />
-                  {errors.contact_type && (
-                    <Form.Control.Feedback type="invalid">
-                      {errors.contact_type.message}
-                    </Form.Control.Feedback>
-                  )}
-                </>
-              )}
+          {/* Product Type Select */}
+          <Form.Group controlId="formProductType" className="mb-3">
+            <Form.Label className="text-muted mb-0">Product Type</Form.Label>
+            <Select
+              options={productOptions}
+              value={selectedProduct}
+              onChange={(selected) => {
+                console.log("Selected Option:", selected); // ✅ Debugging log
+                setSelectedProduct(selected);
+              }}
+              placeholder="Select a product"
             />
-        </Form.Group>
-        <Form.Group controlId="formContactType" className="mb-3">
-            <Form.Label className="text-muted">Transaction Type</Form.Label>
+          </Form.Group>
+
+          {/* Transaction Type Input */}
+          <Form.Group controlId="formTransactionType" className="mb-3">
+            <Form.Label className="text-muted mb-0">Transaction Type</Form.Label>
             <Controller
               name="transaction_type"
               control={control}
@@ -78,19 +112,25 @@ const TransactionTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
                   <Form.Control
                     type="text"
                     {...field}
-                    value={field.value || ''}  // Ensure the value is always a defined string
+                    value={field.value || ""}
                     isInvalid={!!errors.transaction_type}
                   />
-                  {errors.contact_type && (
+                  {errors.transaction_type && (
                     <Form.Control.Feedback type="invalid">
-                      {errors.contact_type.message}
+                      {errors.transaction_type.message}
                     </Form.Control.Feedback>
                   )}
                 </>
               )}
             />
-        </Form.Group>
-          <Button className="bg-info w-100 border-info" type="submit">
+          </Form.Group>
+
+          {/* Submit Button */}
+          <Button
+            style={{ border: "none", background: "linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)" }}
+            className="w-100"
+            type="submit"
+          >
             Submit
           </Button>
         </Form>

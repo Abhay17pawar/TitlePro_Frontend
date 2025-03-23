@@ -5,6 +5,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom"; // Assuming you're using react-router-dom for navigation
 import TransactionTypeModal from "./TransactionTypeModal";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { FaRegPenToSquare } from "react-icons/fa6";
 
 export default function TransactionType() {
   const [contactTypes, setContactTypes] = useState([]);
@@ -27,7 +29,7 @@ export default function TransactionType() {
           return false;
         }
   
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/contact-types`, {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/transactions`, {
           headers: {
             'Authorization': `Bearer ${token}`, // Add the Authorization header with the token
           },
@@ -90,26 +92,36 @@ export default function TransactionType() {
           </button>
         </div>
 
-        {/* Contact Table */}
         <div className="table-responsive">
           <table className="table table-bordered">
             <thead>
               <tr>
-                <th className="bg-info text-white fw-normal">Product Type</th>
-                <th className="bg-info text-white fw-normal">Transction Type</th>
-                <th className="bg-info text-white fw-normal">Created By</th>
-                <th className="bg-info text-white fw-normal">Created At</th>
-                <th className="bg-info text-white fw-normal">Action</th>
+              <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Product Type</th>
+                <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Transction Type</th>
+                <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Created By</th>
+                <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Created At</th>
+                <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Action</th>
               </tr>
             </thead>
             <tbody>
               {TranactionType.map((contact, index) => (
                 <tr key={contact.id} className={index % 2 === 0 ? "bg-white" : "bg-light"}>
-                  <td className="text-muted">{contact.product_type}</td>
+                  <td className="text-muted">{contact.product_type}</td>                 
                   <td className="text-muted">{contact.transaction_type}</td>
                   <td className="text-muted">{contact.created_by}</td>
                   <td className="text-muted">{contact.created_at}</td>
-                  <td className="text-muted">{contact.action}</td>
+                  <td className="text-muted">
+                    <div className="d-flex align-items-center ms-auto">
+                          <div className="d-flex justify-content-center align-items-center p-2 bg-primary bg-opacity-10 text-primary me-2 rounded-2" 
+                              style={{ cursor: 'pointer', width: '1.75rem', height: '1.75rem' }}>
+                            <FaRegPenToSquare />
+                          </div>
+                          <div className="d-flex justify-content-center align-items-center p-2 bg-danger bg-opacity-10 text-danger rounded-2" 
+                              style={{ cursor: 'pointer', width: '1.75rem', height: '1.75rem' }}>
+                            <RiDeleteBin6Line />
+                          </div>
+                        </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -120,13 +132,15 @@ export default function TransactionType() {
         <nav aria-label="Page navigation">
           <ul className="pagination justify-content-center">
             <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-              <button className="page-link text-info" onClick={() => setCurrentPage(currentPage - 1)}>
+              <button               style={{ color: '#5AC0F2' }}  
+                className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>
                 <ChevronLeft size={16} />
               </button>
             </li>
             {[...Array(totalPages)].map((_, index) => (
               <li key={index} className="page-item">
                 <button
+                  style={{background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  
                   className={`page-link ${currentPage === index + 1 ? "bg-info text-white" : "text-info"}`}
                   onClick={() => setCurrentPage(index + 1)}
                 >
@@ -135,7 +149,8 @@ export default function TransactionType() {
               </li>
             ))}
             <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
-              <button className="page-link text-info" onClick={() => setCurrentPage(currentPage + 1)}>
+              <button               style={{ color: '#5AC0F2' }}  
+                className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>
                 <ChevronRight size={16} />
               </button>
             </li>

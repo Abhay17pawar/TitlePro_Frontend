@@ -122,14 +122,14 @@ export default function ContactTable() {
           <table className="table table-bordered">
             <thead>
               <tr>
-                <th className="bg-info text-white fw-normal">Name</th>
-                <th className="bg-info text-white fw-normal">Type</th>
-                <th className="bg-info text-white fw-normal">Address</th>
-                <th className="bg-info text-white fw-normal">Phone Number</th>
-                <th className="bg-info text-white fw-normal">Email Address</th>
-                <th className="bg-info text-white fw-normal">Invoice Terms</th>
-                <th className="bg-info text-white fw-normal">Created By</th>
-                <th className="bg-info text-white fw-normal">Created On</th>
+                <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Name</th>
+                <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Type</th>
+                <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Address</th>
+                <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Phone Number</th>
+                <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Email Address</th>
+                <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Invoice Terms</th>
+                <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Created By</th>
+                <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Created On</th>
               </tr>
             </thead>
             <tbody>
@@ -153,13 +153,15 @@ export default function ContactTable() {
         <nav aria-label="Page navigation">
           <ul className="pagination justify-content-center">
             <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-              <button className="page-link text-info" onClick={() => setCurrentPage(currentPage - 1)}>
+              <button               style={{ color: '#5AC0F2' }}  
+               className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>
                 <ChevronLeft size={16} />
               </button>
             </li>
             {[...Array(totalPages)].map((_, index) => (
               <li key={index} className="page-item">
                 <button
+                  style={{background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}
                   className={`page-link ${currentPage === index + 1 ? "bg-info text-white" : "text-info"}`}
                   onClick={() => setCurrentPage(index + 1)}
                 >
@@ -168,7 +170,9 @@ export default function ContactTable() {
               </li>
             ))}
             <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
-              <button className="page-link text-info" onClick={() => setCurrentPage(currentPage + 1)}>
+              <button 
+              style={{ color: '#5AC0F2' }}  
+              className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>
                 <ChevronRight size={16} />
               </button>
             </li>

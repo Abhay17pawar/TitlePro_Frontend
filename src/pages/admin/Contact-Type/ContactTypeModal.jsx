@@ -67,7 +67,9 @@ const AddContactTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
               )}
             />
           </Form.Group>
-          <Button className="bg-info w-100 border-info" type="submit">
+          <Button 
+          style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  
+          className="w-100" type="submit">
             Submit
           </Button>
         </Form>

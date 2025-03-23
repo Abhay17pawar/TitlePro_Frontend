@@ -152,7 +152,8 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
           </Form.Group>
 
           <Modal.Footer>
-            <Button className="d-flex justify-content-end bg-info border-info" type="submit">
+            <Button style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  
+ className="d-flex justify-content-end" type="submit">
               Create Order
             </Button>
           </Modal.Footer>

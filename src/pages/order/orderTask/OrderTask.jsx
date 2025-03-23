@@ -128,8 +128,16 @@ const OrderTask = () => {
                       <td className="text-muted">{row.createdBy}</td>
                       <td className="text-muted">{row.createdOn}</td>
                       <td style={{cursor:'pointer'}}> <span className='d-inline-flex gap-3'>
-                            <FaRegPenToSquare />
-                            <RiDeleteBin6Line />
+                            <div className="d-flex align-items-center ms-auto">
+                                  <div className="d-flex justify-content-center align-items-center p-2 bg-primary bg-opacity-10 text-primary me-2 rounded-2" 
+                                      style={{ cursor: 'pointer', width: '1.75rem', height: '1.75rem' }}>
+                                    <FaRegPenToSquare />
+                                  </div>
+                                  <div className="d-flex justify-content-center align-items-center p-2 bg-danger bg-opacity-10 text-danger rounded-2" 
+                                      style={{ cursor: 'pointer', width: '1.75rem', height: '1.75rem' }}>
+                                    <RiDeleteBin6Line />
+                                  </div>
+                                </div>
                         </span>
                       </td>
                     </tr>

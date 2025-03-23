@@ -3,6 +3,7 @@ import { Modal, Form, Button, Row, Col, ModalFooter } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import axios from "axios";
+import Select from "react-select";
 
 const AddContactModal = ({ isOpen, setIsOpen, onSubmit }) => {
   const { control, handleSubmit, reset } = useForm();
@@ -107,22 +108,23 @@ const AddContactModal = ({ isOpen, setIsOpen, onSubmit }) => {
             </Form.Group>
 
             <Form.Group controlId="formType" className="mt-2">
-              <Form.Label className="mb-0 text-muted">Type</Form.Label>
-              <Controller
-                name="type"
-                control={control}
-                render={({ field }) => (
-                  <Form.Control as="select" {...field} required>
-                    <option value="">Select Type</option>
-                    {contactTypes.map((type) => (
-                      <option key={type.slug} value={type.slug}>
-                        {type.slug}
-                      </option>
-                    ))}
-                  </Form.Control>
-                )}
-              />
-            </Form.Group>
+            <Form.Label className="mb-0 text-muted">Contact Type</Form.Label>
+            <Controller
+              name="type"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  options={contactTypes.map((type) => ({
+                    value: type.slug,
+                    label: type.slug,
+                  }))}
+                  placeholder="Select Type"
+                />
+              )}
+            />
+          </Form.Group>
+
 
             <Form.Group controlId="formAddress" className="mt-2">
               <Form.Label className="mb-0 text-muted">Address</Form.Label>
@@ -173,7 +175,9 @@ const AddContactModal = ({ isOpen, setIsOpen, onSubmit }) => {
           </Form.Group>
 
           <ModalFooter>
-            <Button className="d-flex justify-content-end bg-info border-info" type="submit">
+            <Button 
+            style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  
+            className="d-flex justify-content-end" type="submit">
               Submit
             </Button>
           </ModalFooter>
