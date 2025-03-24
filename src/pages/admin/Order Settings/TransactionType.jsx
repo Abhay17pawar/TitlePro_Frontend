@@ -67,10 +67,11 @@ export default function TransactionType() {
   }, []);
 
   const handleAddContactType = (newContact) => {
-    // Update the state with the new contact type
     setContactTypes((prevContactTypes) => [...prevContactTypes, newContact]);
+    setContacts((prevContacts) => [...prevContacts, newContact]); // Update contacts for pagination
     setIsOpen(false); // Close modal after submission
   };
+  
 
   // Pagination logic
   const indexOfLastContact = currentPage * contactsPerPage;
@@ -106,7 +107,7 @@ export default function TransactionType() {
               </tr>
             </thead>
             <tbody>
-              {contactTypes.map((contact, index) => (
+              {currentContacts.map((contact, index) => (
                 <tr key={contact.id} className={index % 2 === 0 ? "bg-white" : "bg-light"}>
                   <td className="text-muted">{contact.product_name}</td>                 
                   <td className="text-muted">{contact.transaction_name}</td>
@@ -142,7 +143,7 @@ export default function TransactionType() {
               <li key={index} className="page-item">
                 <button
                   style={{background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  
-                  className={`page-link ${currentPage === index + 1 ? "bg-info text-white" : "text-info"}`}
+                  className={`page-link ${currentPage === index + 1 ? "bg-info text-white" : "text-white"}`}
                   onClick={() => setCurrentPage(index + 1)}
                 >
                   {index + 1}
