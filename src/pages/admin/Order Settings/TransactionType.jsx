@@ -18,36 +18,39 @@ export default function TransactionType() {
   const contactsPerPage = 8;
   const navigate = useNavigate();
 
-  // Fetch all contacts
-    const fetchAllContacts = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        
-        if (!token) {
-          console.error("No token found, please log in.");
-          toast.error("No token found, please log in.", { autoClose: 1500 });
-          return false;
-        }
-  
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/transactions`, {
-          headers: {
-            'Authorization': `Bearer ${token}`, // Add the Authorization header with the token
-          },
-        });
-  
-        const { data } = response;
-        
-        if (data.success && Array.isArray(data.data)) {
-          setContactTypes(data.data);
-        } else {
-          setContactTypes([]);
-        }
-      } catch (error) {
-        console.error("Error fetching contacts:", error);
-        setContactTypes([]);
+  const fetchAllContacts = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('user')); // Correct JSON parsing
+     
+      if (!token) {
+        console.error("No token found, please log in.");
+        toast.error("No token found, please log in.", { autoClose: 1500 });
+        return;
       }
-    };
-    
+  
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/transactions`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      const { data } = response;
+  
+      if (data.success && Array.isArray(data.data)) {
+        setContactTypes(data.data);
+        setContacts(data.data); // Ensure contacts state is updated for pagination
+      } else {
+        setContactTypes([]);
+        setContacts([]);
+      }
+    } catch (error) {
+      console.error("Error fetching contacts:", error);
+      setContactTypes([]);
+      setContacts([]);
+    }
+  };
+  
   const TranactionType = [
     {
       id: 1,
@@ -99,17 +102,15 @@ export default function TransactionType() {
               <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Product Type</th>
                 <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Transction Type</th>
                 <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Created By</th>
-                <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Created At</th>
                 <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Action</th>
               </tr>
             </thead>
             <tbody>
-              {TranactionType.map((contact, index) => (
+              {contactTypes.map((contact, index) => (
                 <tr key={contact.id} className={index % 2 === 0 ? "bg-white" : "bg-light"}>
-                  <td className="text-muted">{contact.product_type}</td>                 
-                  <td className="text-muted">{contact.transaction_type}</td>
-                  <td className="text-muted">{contact.created_by}</td>
-                  <td className="text-muted">{contact.created_at}</td>
+                  <td className="text-muted">{contact.product_name}</td>                 
+                  <td className="text-muted">{contact.transaction_name}</td>
+                  <td className="text-muted">{JSON.parse(localStorage.getItem("user"))?.name}</td>
                   <td className="text-muted">
                     <div className="d-flex align-items-center ms-auto">
                           <div className="d-flex justify-content-center align-items-center p-2 bg-primary bg-opacity-10 text-primary me-2 rounded-2" 

@@ -79,9 +79,9 @@ const OrdersTable = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <Button variant="outline-secondary">
-              <Search size={18} />
-            </Button>
+            <button className="btn btn-outline-info" type="button">
+            <Search size={18} />
+            </button>
           </InputGroup>
         </Col>
         <Col md={6} lg={8} className="d-flex justify-content-md-end gap-2">
@@ -158,7 +158,7 @@ const OrdersTable = () => {
             {[...Array(totalPages)].map((_, index) => (
               <li key={index} className="page-item">
                 <button 
-                  className={`page-link ${currentPage === index + 1 ? "bg-info text-white" : "text-info"}`}
+                  className={`page-link ${currentPage === index + 1 ? "bg-info text-white" : "text-white"}`}
                   style={{background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}
                   onClick={() => setCurrentPage(index + 1)}
                 >
