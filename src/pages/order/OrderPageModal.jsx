@@ -21,7 +21,38 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
   const token = localStorage.getItem("token");
   const [productOptions, setProductOptions] = useState([]);
   const [transactionOptions, setTransactionOptions] = useState([]);
+  const [stateOptions, setStateOptions] = useState([]);
+  const [countyOptions, setCountyOptions] = useState([]); // Store counties
 
+  // Fetch states from API
+  useEffect(() => {
+    const fetchStates = async () => {
+      try {
+        const response = await axios.get(
+          "https://titlepro-backend-final.onrender.com/states",
+          {
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          }
+        );
+
+        if (response.data?.success) {
+          const options = response.data.data.map((state) => ({
+            value: state.id,
+            label: state.state_name,
+          }));
+          setStateOptions(options);
+        } else {
+          toast.error("Failed to fetch states.");
+        }
+      } catch (error) {
+        toast.error("Error fetching states.");
+      }
+    };
+
+    fetchStates();
+  }, []);
+
+  // Fetch product types from API
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -49,6 +80,7 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
     fetchProducts();
   }, []);
 
+  // Fetch transaction types based on selected product type
   const handleProductChange = async (option, field) => {
     field.onChange(option);
     if (option?.value) {
@@ -58,12 +90,10 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
           { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
         );
   
-        console.log("Transaction API Response:", response.data); // Debugging log
-  
         if (response.data?.data && Array.isArray(response.data.data)) {
           const transOptions = response.data.data.map((item, index) => ({
-            value: index, // Since `id` is not present, using index
-            label: item.transaction_name, // Corrected field name
+            value: index, // Using index since there's no ID
+            label: item.transaction_name,
           }));
           setTransactionOptions(transOptions);
         } else {
@@ -71,22 +101,50 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
           toast.error("Invalid transaction data received.");
         }
       } catch (error) {
-        console.error("Error fetching transactions:", error);
         setTransactionOptions([]);
         toast.error("Failed to load transaction types.");
       }
     } else {
-      setTransactionOptions([]); // Reset if no product is selected
+      setTransactionOptions([]);
     }
-  }
+  };
+
+  // Fetch counties based on selected state
+  const handleStateChange = async (option, field) => {
+    field.onChange(option);
+    if (option?.value) {
+      try {
+        const response = await axios.get(
+          `https://titlepro-backend-final.onrender.com/counties/states/${option.value}`,
+          { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+        );
+  
+        if (response.data?.data && Array.isArray(response.data.data)) {
+          const countyOptions = response.data.data.map((county) => ({
+            value: county.id,
+            label: county.county_name,
+          }));
+          setCountyOptions(countyOptions);
+        } else {
+          setCountyOptions([]);
+          toast.error("Failed to fetch counties.");
+        }
+      } catch (error) {
+        setCountyOptions([]);
+        toast.error("Failed to load counties.");
+      }
+    } else {
+      setCountyOptions([]);
+    }
+  };
 
   const handleFormSubmit = async (data) => {
     try {
       const formattedData = {
         customer: data.customer,
-        state: data.state,
-        county: data.county,
-        product_type: data.product_type?.value || "", 
+        state: data.state?.value || "",
+        county: data.county?.value || "",
+        product_type: data.product_type?.value || "",
         transaction_type: data.transactionType?.value || "",
         data_source: data.dataSource,
         workflow_group: data.workflowGroup,
@@ -146,7 +204,16 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
                 <Controller
                   name="state"
                   control={control}
-                  render={({ field }) => <Form.Control type="text" placeholder="Enter State" {...field} required />}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      options={stateOptions}
+                      placeholder="Select state"
+                      value={stateOptions.find((option) => option.value === field.value?.value) || null}
+                      onChange={(option) => handleStateChange(option, field)}
+                      required
+                    />
+                  )}
                 />
               </Form.Group>
             </Col>
@@ -159,7 +226,16 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
                 <Controller
                   name="county"
                   control={control}
-                  render={({ field }) => <Form.Control type="text" placeholder="Enter county" {...field} required />}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      options={countyOptions}
+                      placeholder="Select county"
+                      value={countyOptions.find((option) => option.value === field.value?.value) || null}
+                      onChange={(option) => field.onChange(option)}
+                      required
+                    />
+                  )}
                 />
               </Form.Group>
             </Col>
@@ -170,22 +246,21 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
               Product Type <span className="text-danger">*</span>
             </Form.Label>
             <Controller
-            name="product_type"
-            control={control}
-            render={({ field }) => (
-              <Select
-                {...field}
-                options={productOptions}
-                placeholder="Select product type"
-                value={productOptions.find(option => option.value === field.value?.value) || null}
-                onChange={(option) => {
-                  field.onChange(option); 
-                  handleProductChange(option, field); // Ensure transaction options update
-                }}
-              />
-            )}
-          />
-
+              name="product_type"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  options={productOptions}
+                  placeholder="Select product type"
+                  value={productOptions.find((option) => option.value === field.value?.value) || null}
+                  onChange={(option) => {
+                    field.onChange(option);
+                    handleProductChange(option, field);
+                  }}
+                />
+              )}
+            />
           </Form.Group>
 
           <Form.Group controlId="formTransactionType" className="mt-2">
@@ -193,18 +268,18 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
               Transaction Type <span className="text-danger">*</span>
             </Form.Label>
             <Controller
-            name="transactionType"
-            control={control}
-            render={({ field }) => (
-              <Select
-                {...field}
-                options={transactionOptions}
-                placeholder="Select transaction type"
-                value={transactionOptions.find(option => option.value === field.value?.value) || null}
-                onChange={(option) => field.onChange(option)}
-              />
-            )}
-          />
+              name="transactionType"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  options={transactionOptions}
+                  placeholder="Select transaction type"
+                  value={transactionOptions.find((option) => option.value === field.value?.value) || null}
+                  onChange={(option) => field.onChange(option)}
+                />
+              )}
+            />
           </Form.Group>
 
           <Form.Group controlId="formDataSource" className="mt-2">
@@ -230,11 +305,11 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
           </Form.Group>
 
           <Modal.Footer>
-            <Button 
+            <Button
               style={{
                 border: "none",
                 background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)',
-              }} 
+              }}
               type="submit"
             >
               Create Order
