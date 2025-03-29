@@ -9,7 +9,7 @@ const TransactionTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
   const { control, handleSubmit, reset, formState: { errors } } = useForm();
   const [productOptions, setProductOptions] = useState([]); // Store products
   const [selectedProduct, setSelectedProduct] = useState(null); // Store selected product
-
+  
   // Fetch product types when modal opens
   useEffect(() => {
     if (isOpen) {
@@ -35,7 +35,7 @@ const TransactionTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
   const handleFormSubmit = async (data) => {
     try {
       if (!selectedProduct) {
-        toast.error("Please select a product type.");
+        toast.error("Please select a product type.", { autoClose: 1500 });
         return;
       }
 
@@ -49,17 +49,10 @@ const TransactionTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
 
       console.log("Request Data:", requestData); // ✅ Log the request before sending
 
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.error("No token found, please log in.");
-        toast.error("No token found, please log in.", { autoClose: 1500 });
-        return;
-      }
 
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/transactions`, requestData, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -71,11 +64,10 @@ const TransactionTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
         reset();
         setSelectedProduct(null); // ✅ Reset selected product
       } else {
-        toast.error(result.message || "Failed to add transaction type.");
+        toast.error("Failed to add transaction type.", { autoClose: 1500 });
       }
     } catch (error) {
-      console.error("Error submitting transaction:", error); // ✅ Log detailed error
-      toast.error("An error occurred while adding transaction type.");
+      toast.error("An error occurred while adding transaction type.", { autoClose: 1500 });
     }
   };
 

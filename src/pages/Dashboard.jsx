@@ -5,15 +5,16 @@ import "leaflet/dist/leaflet.css";
 import "chart.js/auto";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useAuth } from "../Context/AuthContext";
 
 const ChartsDashboard = () => {
   const navigate = useNavigate(); // Initialize navigation
-  const token = localStorage.getItem('token'); // Check for token (authentication)
-
+  const { token } = useAuth();
+  
   // If no token, redirect to home page ("/")
   useEffect(() => {
     if (!token) {
-      toast.error("No token found, redirecting to login.", { autoClose: 1500 });
+      toast.error("No token found! redirecting to login", { autoClose: 1500 });
       navigate("/"); // Redirect to home page if user is not registered
     }
   }, [token, navigate]);

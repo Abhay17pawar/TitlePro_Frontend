@@ -1,57 +1,81 @@
 import React, { useState, useEffect } from 'react';
-import { MdOutlineCircle } from "react-icons/md";
-import "../Order/scroller.css";
 import { FaRegPenToSquare } from 'react-icons/fa6';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import { FaExclamation, FaPlus } from 'react-icons/fa';
 import { Smile } from 'lucide-react';
+import axios from 'axios';
 import AddStateModal from './StateModal';
-import axios from 'axios'; // Ensure axios is imported
+import EditStateModal from './EditStateModal';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import "../Order/scroller.css";
 
 const State = () => {
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editState, setEditState] = useState(null);
+  const [states, setStates] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
 
-  const [state, setState] = useState([]);  // Array to store fetched states
-  const [isOpen, setIsOpen] = useState(false);  // State to control modal open/close
-
-  const handleState = (newState) => {
-    // Update the state with the new contact type
-    setState((prevState) => [...prevState, newState]);
-    setIsOpen(false); // Close modal after submission
-  };
-
-  // Fetch all contacts
+  // Fetch all states
   const fetchAllStates = async () => {
     try {
       const token = localStorage.getItem('token');
-
       if (!token) {
         console.error("No token found, please log in.");
-        // Handle error, maybe using toast or alert
         return;
       }
 
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/states`, {
-        headers: {
-          'Authorization': `Bearer ${token}`, // Add the Authorization header with the token
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      const { data } = response;
-
-      if (data.success && Array.isArray(data.data)) {
-        setState(data.data); // Set fetched data to state
+      if (response.data.success && Array.isArray(response.data.data)) {
+        setStates(response.data.data);
       } else {
-        setState([]); // If response format is unexpected, set state to empty array
+        setStates([]);
       }
     } catch (error) {
-      console.error("Error fetching States:", error);
-      setState([]); // Handle error by setting state to empty array
+      console.error("Error fetching states:", error);
+      setStates([]);
     }
   };
 
   useEffect(() => {
-    fetchAllStates(); // Call fetchAllStates on component mount
+    fetchAllStates();
   }, []);
+
+  // Add new state
+  const handleState = (newState) => {
+    setStates((prevState) => [...prevState, newState]);
+    setIsOpen(false);
+  };
+
+  // Edit existing state
+  const handleEditState = (updatedState) => {
+    setStates(states.map((state) => (state.id === updatedState.id ? updatedState : state)));
+    setIsEditOpen(false);
+  };
+
+  // Delete state with Toast
+  const handleDeleteState = async (stateId) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("Authentication error! Please log in.");
+        return;
+      }
+
+      await axios.delete(`${import.meta.env.VITE_API_URL}/states/${stateId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setStates(states.filter((state) => state.id !== stateId));
+      toast.success("State deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting state:", error);
+      toast.error("Failed to delete state. Please try again.");
+    }
+  };
 
   return (
     <>
@@ -66,7 +90,7 @@ const State = () => {
                 <FaExclamation color="white" size={16} />
               </button>
               <button
-                onClick={() => setIsOpen(true)} // Open modal on click
+                onClick={() => setIsOpen(true)}
                 style={{ background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}
                 className="btn btn-sm">
                 <FaPlus color="white" size={16} />
@@ -75,19 +99,24 @@ const State = () => {
           </div>
           <div className="card-body p-0 custom-scrollbar overflow-auto" style={{ height: '200px', maxHeight: '200px' }}>
             <ul className="list-group list-group-flush">
-              {state.map((state, index) => (
-                <li key={index} className="list-group-item d-flex align-items-center text-muted">
+              {states.map((state) => (
+                <li key={state.id} className="list-group-item d-flex align-items-center text-muted">
                   <div className="d-flex align-items-center">
                     <Smile className="text-info me-2" size={16} />
                     {state?.state_name}
                   </div>
                   <div className="d-flex align-items-center ms-auto">
                     <div
+                      onClick={() => {
+                        setEditState(state);
+                        setIsEditOpen(true);
+                      }}
                       className="d-flex justify-content-center align-items-center p-2 bg-primary bg-opacity-10 text-primary me-2 rounded-2"
                       style={{ cursor: 'pointer', width: '1.75rem', height: '1.75rem' }}>
                       <FaRegPenToSquare />
                     </div>
                     <div
+                      onClick={() => handleDeleteState(state.id)}
                       className="d-flex justify-content-center align-items-center p-2 bg-danger bg-opacity-10 text-danger rounded-2"
                       style={{ cursor: 'pointer', width: '1.75rem', height: '1.75rem' }}>
                       <RiDeleteBin6Line />
@@ -99,6 +128,7 @@ const State = () => {
           </div>
         </div>
         <AddStateModal isOpen={isOpen} setIsOpen={setIsOpen} onSubmit={handleState} />
+        {isEditOpen && <EditStateModal isOpen={isEditOpen} setIsOpen={setIsEditOpen} onSubmit={handleEditState} editState={editState} />}
       </div>
     </>
   );

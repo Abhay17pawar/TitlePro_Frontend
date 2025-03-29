@@ -2,23 +2,17 @@ import { Modal, Form, Button } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import axios from "axios"; 
+import { useAuth } from "../../../../Context/AuthContext";
 
 const AddStateModal = ({ isOpen, setIsOpen, onSubmit }) => {
   const { control, handleSubmit, reset, formState: { errors } } = useForm();
 
   const handleFormSubmit = async (data) => {
     try {
-      const token = localStorage.getItem('token');
-      
-      if (!token) {
-        console.error("No token found, please log in.");
-        toast.error("No token found, please log in.", { autoClose: 1500 });
-        return false;
-      }
+
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/states`, data, {
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
         },
       });
 
@@ -30,10 +24,10 @@ const AddStateModal = ({ isOpen, setIsOpen, onSubmit }) => {
         setIsOpen(false);
         reset();
       } else {
-        toast.error(result.message || "Failed to add State.");
+        toast.error("Failed to add State.", { autoClose: 1500 });
       }
     } catch (error) {
-      toast.error("An error occurred while adding State.");
+      toast.error("An error occurred while adding State.", { autoClose: 1500 });
     }
   };
 

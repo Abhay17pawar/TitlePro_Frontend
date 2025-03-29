@@ -8,18 +8,19 @@ import { toast } from 'react-toastify'; // Ensure you have toast for notificatio
 import { FaRegPenToSquare } from 'react-icons/fa6';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import { Smile } from 'lucide-react';
+import { useAuth } from '../../../../Context/AuthContext';
 
 const ContactType = () => {
   const [contactTypes, setContactTypes] = useState([]);
   const [isOpen, setIsOpen] = useState(false); // Modal state
+  const { token } = useAuth();
 
   // Fetch all contact types from the API
   const fetchAllContacts = async () => {
     try {
-      const token = localStorage.getItem('token');
       
       if (!token) {
-        toast.error("No token found, please log in.", { autoClose: 1500 });
+        toast.error("No token found! redirecting to login", { autoClose: 1500 });
         return;
       }
 

@@ -5,6 +5,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import OrderPageModal from "./OrderPageModal";
+import { useAuth } from "../../Context/AuthContext";
 
 // Sample data for the orders table (removed, since it's replaced by the API call)
 const OrdersTable = () => {
@@ -14,15 +15,15 @@ const OrdersTable = () => {
   const [orders, setOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const contactsPerPage = 8;
-
+  const { token } = useAuth();
+  
   // Fetch orders from the API
   const fetchOrders = async () => {
     try {
-      const token = localStorage.getItem('token');
       
       if (!token) {
         navigate('/');
-        toast.error("No token found, redirecting to login Page..", { autoClose: 1500 });
+      toast.error("No token found! redirecting to login", { autoClose: 1500 });
         return false;
       }
 

@@ -8,6 +8,7 @@ import { FaRegPenToSquare } from 'react-icons/fa6';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import { Smile } from 'lucide-react';
 import AddProductTypeModal from './ProductTypeModal';
+import { useAuth } from '../../../Context/AuthContext';
 
 const ProductType = () => {
   const [contactTypes, setContactTypes] = useState([]);
@@ -15,19 +16,9 @@ const ProductType = () => {
 
   // Fetch all contact types from the API
   const fetchAllProductType = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      
-      if (!token) {
-        toast.error("No token found, please log in.", { autoClose: 1500 });
-        return;
-      }
+    try {      
 
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/products`, {
-        headers: {
-          'Authorization': `Bearer ${token}`, // Add the Authorization header with the token
-        },
-      });
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/products`);
 
       const { data } = response;
       

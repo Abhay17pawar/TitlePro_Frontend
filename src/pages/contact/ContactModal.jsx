@@ -4,14 +4,15 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import axios from "axios";
 import Select from "react-select";
+import { useAuth } from "../../Context/AuthContext";
 
 const AddContactModal = ({ isOpen, setIsOpen, onSubmit }) => {
   const { control, handleSubmit, reset } = useForm();
   const [contactTypes, setContactTypes] = useState([]);
-
+  const { token } = useAuth();
+  
   // Fetch contact types from API
   useEffect(() => {
-    const token = localStorage.getItem("token");
   
     const fetchContactTypes = async () => {
       try {

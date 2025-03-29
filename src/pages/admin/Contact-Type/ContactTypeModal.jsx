@@ -2,13 +2,14 @@ import { Modal, Form, Button } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import axios from "axios"; // Import axios
+import { useAuth } from "../../../Context/AuthContext";
 
 const AddContactTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
   const { control, handleSubmit, reset, formState: { errors } } = useForm();
+  const { token } = useAuth();
 
   const handleFormSubmit = async (data) => {
     try {
-      const token = localStorage.getItem('token');
       
       if (!token) {
         console.error("No token found, please log in.");

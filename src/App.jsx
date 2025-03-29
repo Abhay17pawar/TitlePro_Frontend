@@ -19,10 +19,12 @@ import DeletedContactTable from "./pages/contact/DeletedContact";
 import LookupList from "./pages/admin/LookUp List/LookupList";
 import TransactionType from "./pages/admin/Order Settings/TransactionType";
 import ProductType from "./pages/admin/Order Settings/ProductType";
+import { AuthProvider } from "./Context/AuthContext";
 
 const App = () => {
   return (
     <Router>
+      <AuthProvider>
       <Navbar />
       <Routes>
       <Route path="/" element={<Login />} />
@@ -48,6 +50,7 @@ const App = () => {
         <Route path="/transaction-type" element={<TransactionType />} />
       </Routes>
       <ToastContainer />
+    </AuthProvider>
     </Router>
   );
 };

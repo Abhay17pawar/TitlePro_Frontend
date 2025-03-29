@@ -8,26 +8,19 @@ import { FaRegPenToSquare } from 'react-icons/fa6';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import { Smile } from 'lucide-react';
 import AddProductTypeModal from './ProductTypeModal';
+import EditProductTypeModal from './EditProductTypeModal';
 
 const ProductType = () => {
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editState, setEditState] = useState(null);
   const [contactTypes, setContactTypes] = useState([]);
   const [isOpen, setIsOpen] = useState(false); // Modal state
 
   // Fetch all contact types from the API
   const fetchAllProductType = async () => {
     try {
-      const token = localStorage.getItem('token');
       
-      if (!token) {
-        toast.error("No token found, please log in.", { autoClose: 1500 });
-        return;
-      }
-
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/products`, {
-        headers: {
-          'Authorization': `Bearer ${token}`, // Add the Authorization header with the token
-        },
-      });
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/products`);
 
       const { data } = response;
       
@@ -47,6 +40,19 @@ const ProductType = () => {
     fetchAllProductType();
   }, []);
 
+  // Delete state with Toast
+  const handleDeleteProductType = async (productId) => {
+    try { 
+      await axios.delete(`${import.meta.env.VITE_API_URL}/products/${productId}`);
+  
+      // Corrected this line to use `contactTypes` instead of `states`
+      setContactTypes(contactTypes.filter((product) => product.id !== productId));
+      toast.success("Product Type deleted successfully!", { autoClose: 1500 });
+    } catch (error) {
+      toast.error("Failed to delete Product Type. Please try again.", { autoClose: 1500 });
+    }
+  };
+
   // Handle adding a new contact type
   const handleAddContactType = (newContact) => {
     if (newContact) {
@@ -54,6 +60,12 @@ const ProductType = () => {
       // fetchAllProductType(); // Optional: Uncomment this line if you prefer refetching data after adding a new contact type.
     }
     setIsOpen(false); // Close modal after submission
+  };
+
+  // Edit existing state
+  const handleEditState = (updatedct) => {
+    setContactTypes(contactTypes.map((ct) => (ct.id === updatedct.id ? updatedct : ct)));
+    setIsEditOpen(false);
   };
 
   return (
@@ -82,12 +94,19 @@ const ProductType = () => {
                     {type.product_name}
                   </div>
                  <div className="d-flex align-items-center ms-auto">
-                       <div className="d-flex justify-content-center align-items-center p-2 bg-primary bg-opacity-10 text-primary me-2 rounded-2" 
+                       <div
+                          onClick={() => {
+                            setEditState(type);
+                            setIsEditOpen(true);
+                          }}
+                       className="d-flex justify-content-center align-items-center p-2 bg-primary bg-opacity-10 text-primary me-2 rounded-2" 
                            style={{ cursor: 'pointer', width: '1.75rem', height: '1.75rem' }}>
                          <FaRegPenToSquare />
                        </div>
-                       <div className="d-flex justify-content-center align-items-center p-2 bg-danger bg-opacity-10 text-danger rounded-2" 
-                           style={{ cursor: 'pointer', width: '1.75rem', height: '1.75rem' }}>
+                       <div 
+                        onClick={() => handleDeleteProductType(type.id)}
+                        className="d-flex justify-content-center align-items-center p-2 bg-danger bg-opacity-10 text-danger rounded-2" 
+                         style={{ cursor: 'pointer', width: '1.75rem', height: '1.75rem' }}>
                          <RiDeleteBin6Line />
                        </div>
                      </div>
@@ -98,6 +117,7 @@ const ProductType = () => {
         </div>
       </div>
       <AddProductTypeModal isOpen={isOpen} setIsOpen={setIsOpen} onSubmit={handleAddContactType} />
+      {isEditOpen && <EditProductTypeModal isOpen={isEditOpen} setIsOpen={setIsEditOpen} onSubmit={handleEditState} editState={editState} />}
     </>
   );
 };

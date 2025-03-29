@@ -5,20 +5,22 @@ import backgroundImage from "../../assets/background.png";
 import { useNavigate } from "react-router-dom";
 import validator from "validator";
 import axios from "axios";
+import { useAuth } from "../../Context/AuthContext"; // Import useAuth
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth(); // Use login function from AuthContext
   const [emailOrPhone, setEmailOrPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({ email: "", password: "" });
-  const [apiError, setApiError] = useState(""); // To show API error if login fails
-  const [loading, setLoading] = useState(false); // To show loading state when calling API
-
+  const [apiError, setApiError] = useState(""); 
+  const [loading, setLoading] = useState(false);
+  const { token } = useAuth();
+  
   useEffect(() => {
-    const token = localStorage.getItem("token");
     if (token) {
-      navigate("/dashboard"); // Redirect if logged in
+      navigate("/dashboard"); // Redirect if already logged in
     }
   }, [navigate]);
 
@@ -50,20 +52,17 @@ const Login = () => {
         }
       );
   
-      // Log the full response
       console.log("Full API Response:", response);
-  
-      // Log only the data part if preferred
       console.log("API Response Data:", response.data);
   
       const { token, user } = response.data;
   
-      // Store token and user in localStorage
-      localStorage.setItem("token", token);
+      // Use AuthContext login function
+      login(token);
+
+      // Store user details separately if needed
       localStorage.setItem("user", JSON.stringify(user));
   
-      // Redirect after successful login
-      navigate("/dashboard");
     } catch (error) {
       console.error("Login failed", error.response?.data?.message || error.message);
       setApiError(error.response?.data?.message || "Something went wrong!");
@@ -92,7 +91,7 @@ const Login = () => {
       <Card
         style={{
           width: "100%",
-          maxWidth: "500px", // Max width for large screens
+          maxWidth: "500px",
           height: "auto",
           padding: "20px",
           borderRadius: "10px",

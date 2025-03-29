@@ -21,7 +21,7 @@ export default function DeletedContactTable() {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        toast.error("No token found, redirecting to login Page.", { autoClose: 1500 });
+      toast.error("No token found! redirecting to login", { autoClose: 1500 });
         navigate("/");
         return;
       }

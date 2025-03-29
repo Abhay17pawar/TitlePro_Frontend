@@ -1,27 +1,15 @@
 import { Modal, Form, Button } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import axios from "axios"; // Import axios
+import axios from "axios"; 
 
 const AddProductTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
   const { control, handleSubmit, reset, formState: { errors } } = useForm();
 
   const handleFormSubmit = async (data) => {
     try {
-      const token = localStorage.getItem('token');
       
-      if (!token) {
-        console.error("No token found, please log in.");
-        toast.error("No token found, please log in.", { autoClose: 1500 });
-        return;
-      }
-
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/products`, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/products`, data);
 
       const result = response.data;
 

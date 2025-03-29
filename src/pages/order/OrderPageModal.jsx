@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import Select from "react-select";
 import { useEffect, useState } from "react";
+import { useAuth } from "../../Context/AuthContext";
 
 const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
   const { control, handleSubmit, reset } = useForm({
@@ -18,7 +19,7 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
     },
   });
 
-  const token = localStorage.getItem("token");
+  const { token } = useAuth();
   const [productOptions, setProductOptions] = useState([]);
   const [transactionOptions, setTransactionOptions] = useState([]);
   const [stateOptions, setStateOptions] = useState([]);
