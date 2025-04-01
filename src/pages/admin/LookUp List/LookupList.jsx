@@ -7,6 +7,7 @@ import PropertyTax from "./PropertyTax/PropertyTax";
 import Tasks from "./Tasks/Tasks";
 import DataAccess from "./Data Access/DataAccess";
 import Accounting from "./Accounting/Accounting";
+import Worksheet from "./Worksheet/Worksheet";
 
 export default function LookupList() {
   return (
@@ -102,7 +103,7 @@ export default function LookupList() {
           {location.pathname === "/lookuplist-propertytax" && <PropertyTax />}
           {location.pathname === "/lookuplist-tasks" && <Tasks />}
           {location.pathname === "/lookuplist-data-access" && <DataAccess />}
-          {location.pathname === "/lookuplist-worksheet" && <DataAccess />}
+          {location.pathname === "/lookuplist-worksheet" && <Worksheet />}
           {location.pathname === "/lookuplist-accounting" && <Accounting />}
         </div>
       </div>

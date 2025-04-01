@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaRegPenToSquare } from 'react-icons/fa6';
 import { RiDeleteBin6Line } from 'react-icons/ri';
-import { FaExclamation, FaPlus } from 'react-icons/fa';
+import { FaPlus } from 'react-icons/fa';
 import { Smile } from 'lucide-react';
 import axios from 'axios';
 import AddStateModal from './StateModal';
@@ -9,6 +9,7 @@ import EditStateModal from './EditStateModal';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import "../Order/scroller.css";
+import Swal from 'sweetalert2';
 
 const State = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -19,15 +20,8 @@ const State = () => {
   // Fetch all states
   const fetchAllStates = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        console.error("No token found, please log in.");
-        return;
-      }
 
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/states`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/states`);
 
       if (response.data.success && Array.isArray(response.data.data)) {
         setStates(response.data.data);
@@ -56,26 +50,33 @@ const State = () => {
     setIsEditOpen(false);
   };
 
-  // Delete state with Toast
   const handleDeleteState = async (stateId) => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        toast.error("Authentication error! Please log in.");
-        return;
+    const confirmDelete = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "rgba(14,153,223,1)",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel"
+    });
+  
+    if (confirmDelete.isConfirmed) {
+      try {
+        await axios.delete(`${import.meta.env.VITE_API_URL}/states/${stateId}`);
+        
+        setStates(states.filter((state) => state.id !== stateId));
+        toast.success("State deleted successfully!");
+      } catch (error) {
+        console.error("Error deleting state:", error);
+        toast.error("Failed to delete state. Please try again.");
       }
-
-      await axios.delete(`${import.meta.env.VITE_API_URL}/states/${stateId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      setStates(states.filter((state) => state.id !== stateId));
-      toast.success("State deleted successfully!");
-    } catch (error) {
-      console.error("Error deleting state:", error);
-      toast.error("Failed to delete state. Please try again.");
+    } else if (confirmDelete.dismiss === Swal.DismissReason.cancel) {
+      Swal.fire("Cancelled", "Your state is safe!", "info");
     }
   };
+  
 
   return (
     <>
@@ -84,17 +85,18 @@ const State = () => {
           <div className="card-header bg-light d-flex justify-content-between align-items-center py-2">
             <h6 className="mb-0 text-info">State</h6>
             <div>
-              <button
-                style={{ background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}
-                className="btn btn-sm me-1">
-                <FaExclamation color="white" size={16} />
-              </button>
-              <button
+               <button 
+                  style={{
+                  display: 'flex',           
+                  alignItems: 'center',      
+                  justifyContent: 'center',  
+                  background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)'
+                }}
+                className="btn btn-sm"
                 onClick={() => setIsOpen(true)}
-                style={{ background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}
-                className="btn btn-sm">
-                <FaPlus color="white" size={16} />
-              </button>
+              >
+                <FaPlus color="white" size={16} />                           
+                  </button>
             </div>
           </div>
           <div className="card-body p-0 custom-scrollbar overflow-auto" style={{ height: '200px', maxHeight: '200px' }}>

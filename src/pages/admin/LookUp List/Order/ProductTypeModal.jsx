@@ -8,18 +8,10 @@ const AddProductTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
 
   const handleFormSubmit = async (data) => {
     try {
-      const token = localStorage.getItem('token');
-      
-      if (!token) {
-        console.error("No token found, please log in.");
-        toast.error("No token found, please log in.", { autoClose: 1500 });
-        return;
-      }
 
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/products`, data, {
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
         },
       });
 

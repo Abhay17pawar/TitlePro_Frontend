@@ -1,8 +1,20 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
-import { FaTachometerAlt, FaClipboardList, FaTasks, FaChartBar, FaCalculator, FaAddressBook, FaUserShield, FaBell, FaCommentDots } from "react-icons/fa";
+import { NavLink, useNavigate } from "react-router-dom";
+import { FaTachometerAlt, FaClipboardList, FaTasks, FaChartBar, FaCalculator, FaAddressBook, FaUserShield, FaBell, FaCommentDots, FaUserCircle } from "react-icons/fa";
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
 
 const Navbar = () => {
+  const navigate = useNavigate();
+
+  const handleSignOut = () => {
+    // Clear user session (if using localStorage or context)
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/"); // Redirect to login page
+    window.location.reload();
+  };
+
   return (
     <nav className="navbar navbar-expand-lg py-2" style={{ backgroundColor: "#022a4d" }}>
       <div className="container-fluid">
@@ -61,9 +73,14 @@ const Navbar = () => {
           <NavLink className="nav-link text-light me-3" to="/messages">
             <FaCommentDots className="fs-5" />
           </NavLink>
-          <div className="rounded-circle bg-secondary d-flex justify-content-center align-items-center text-light" style={{ width: "35px", height: "35px" }}>
-            DK
-          </div>
+          
+          {/* Profile Dropdown using React-Bootstrap */}
+          <DropdownButton id="dropdown-basic-button" title={<FaUserCircle className="fs-3 text-light" />} variant="link">
+            <Dropdown.Item as={NavLink} to="/dashboard">Dashboard</Dropdown.Item>
+            <Dropdown.Item as={NavLink} to="/settings">Settings</Dropdown.Item>
+            <Dropdown.Divider />
+            <Dropdown.Item onClick={() => handleSignOut()}>Sign out</Dropdown.Item>
+            </DropdownButton>
         </div>
       </div>
     </nav>

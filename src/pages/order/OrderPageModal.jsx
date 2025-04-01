@@ -23,18 +23,42 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
   const [productOptions, setProductOptions] = useState([]);
   const [transactionOptions, setTransactionOptions] = useState([]);
   const [stateOptions, setStateOptions] = useState([]);
-  const [countyOptions, setCountyOptions] = useState([]); // Store counties
+  const [countyOptions, setCountyOptions] = useState([]);
+  const [datasource, setDataSource] = useState([]);
 
-  // Fetch states from API
+  // Fetch Data Source Options
+  useEffect(() => {
+    const fetchDataSource = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/datasource`);
+        const { data } = response;
+
+        console.log("Data Source Response: ", data);
+
+        if (data.success && Array.isArray(data.data)) {
+          const options = data.data.map((item) => ({
+            value: item.id, // Assuming 'id' is the unique identifier for the data source
+            label: item.source_name, // Assuming 'name' is the label for the data source
+          }));
+          setDataSource(options);
+        } else {
+          toast.error("Failed to fetch data sources.");
+        }
+      } catch (error) {
+        toast.error("Error fetching data sources.");
+      }
+    };
+
+    fetchDataSource();
+  }, []);
+
+  // Fetch States
   useEffect(() => {
     const fetchStates = async () => {
       try {
-        const response = await axios.get(
-          "https://titlepro-backend-final.onrender.com/states",
-          {
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          }
-        );
+        const response = await axios.get("https://titlepro-backend-final.onrender.com/states", {
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        });
 
         if (response.data?.success) {
           const options = response.data.data.map((state) => ({
@@ -53,21 +77,18 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
     fetchStates();
   }, []);
 
-  // Fetch product types from API
+  // Fetch Product Types
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(
-          "https://titlepro-backend-final.onrender.com/products",
-          {
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+        const response = await axios.get("https://titlepro-backend-final.onrender.com/products", {
+          headers: { "Content-Type": "application/json" },
+        });
 
         if (response.data?.data && Array.isArray(response.data.data)) {
           const options = response.data.data.map((product) => ({
             value: product.id,
-            label: product.product_name,
+            label: product.product,
           }));
           setProductOptions(options);
         } else {
@@ -81,7 +102,7 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
     fetchProducts();
   }, []);
 
-  // Fetch transaction types based on selected product type
+  // Fetch Transaction Types based on Product Type
   const handleProductChange = async (option, field) => {
     field.onChange(option);
     if (option?.value) {
@@ -90,7 +111,7 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
           `https://titlepro-backend-final.onrender.com/transactions/${option.value}`,
           { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
         );
-  
+
         if (response.data?.data && Array.isArray(response.data.data)) {
           const transOptions = response.data.data.map((item, index) => ({
             value: index, // Using index since there's no ID
@@ -110,7 +131,7 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
     }
   };
 
-  // Fetch counties based on selected state
+  // Fetch Counties based on selected State
   const handleStateChange = async (option, field) => {
     field.onChange(option);
     if (option?.value) {
@@ -119,7 +140,7 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
           `https://titlepro-backend-final.onrender.com/counties/states/${option.value}`,
           { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
         );
-  
+
         if (response.data?.data && Array.isArray(response.data.data)) {
           const countyOptions = response.data.data.map((county) => ({
             value: county.id,
@@ -139,6 +160,7 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
     }
   };
 
+  // Handle form submit
   const handleFormSubmit = async (data) => {
     try {
       const formattedData = {
@@ -178,6 +200,13 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
     }
   };
 
+  const customerOptions = [
+    { value: 'customer1', label: 'Customer 1' },
+    { value: 'customer2', label: 'Customer 2' },
+    { value: 'customer3', label: 'Customer 3' },
+    // Add more options as needed
+  ];
+
   return (
     <Modal show={isOpen} onHide={() => setIsOpen(false)} size="md" centered>
       <Modal.Header closeButton>
@@ -190,9 +219,17 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
               Customer <span className="text-danger">*</span>
             </Form.Label>
             <Controller
-              name="customer"
+        name="customer"
               control={control}
-              render={({ field }) => <Form.Control type="text" {...field} required />}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  options={customerOptions}
+                  required
+                  onChange={(selectedOption) => field.onChange(selectedOption?.value)} // Handle onChange to integrate with react-hook-form
+                  placeholder="Select a Customer"
+                />
+              )}
             />
           </Form.Group>
 
@@ -284,14 +321,25 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
           </Form.Group>
 
           <Form.Group controlId="formDataSource" className="mt-2">
-            <Form.Label className="mb-0 text-muted">
+          <Form.Label className="mb-0 text-muted">
               Data Source <span className="text-danger">*</span>
             </Form.Label>
             <Controller
-              name="dataSource"
-              control={control}
-              render={({ field }) => <Form.Control type="text" {...field} required />}
-            />
+            name="dataSource"
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                options={datasource} // Using the mapped dataSource options
+                placeholder="Select data source"
+                value={datasource.find((option) => option.value === field.value?.value) || null} // Match selected value
+                onChange={(selectedOption) => field.onChange(selectedOption)} // Correctly set the selected option
+                getOptionLabel={(option) => option.label} // Display the label of the option
+                required
+              />
+            )}
+          />
+
           </Form.Group>
 
           <Form.Group controlId="formWorkflowGroup" className="mt-2">

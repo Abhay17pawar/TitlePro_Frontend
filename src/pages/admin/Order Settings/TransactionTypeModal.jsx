@@ -18,7 +18,7 @@ const TransactionTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
           const productsArray = response.data?.data || []; // Ensure correct array
           const products = productsArray.map(product => ({
             value: product.id,  // Store product ID
-            label: product.product_name // Store product name
+            label: product.product // Store product name
           }));
 
           setProductOptions(products);

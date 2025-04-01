@@ -132,7 +132,24 @@ const OrdersTable = () => {
                 <td className="text-muted">{order.customer}</td>
                 <td className="text-muted"></td>
                 <td className="text-muted">{order.transaction_type}</td>
-                <td className="text-muted">{order.data_source}</td>
+                <td className="text-muted">
+  {order.data_source 
+    ? (typeof order.data_source === 'string' 
+        ? (() => {
+            try {
+              // Attempt to parse the string as JSON
+              const parsedData = JSON.parse(order.data_source);
+              return parsedData.label || "Unknown"; // Return the label if present
+            } catch (e) {
+              // If parsing fails, return the raw string (or any fallback you need)
+              return "Invalid data source"; 
+            }
+          })() 
+        : order.data_source?.label || "Unknown") // If already an object, just access the label
+    : "Unknown"}
+</td>
+
+
                 <td className="text-muted">{order.state}</td>
                 <td className="text-muted">{order.county}</td>
                 <td className="text-muted">{order.workflow_group}</td>

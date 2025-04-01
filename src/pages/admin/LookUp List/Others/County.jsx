@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { MdOutlineCircle } from "react-icons/md";
 import "../Order/scroller.css";
 import { FaRegPenToSquare } from 'react-icons/fa6';
 import { RiDeleteBin6Line } from 'react-icons/ri';
-import { FaExclamation, FaPlus } from 'react-icons/fa';
+import { FaPlus } from 'react-icons/fa';
 import { Smile } from 'lucide-react';
 import AddCountyModal from './CountyModal';
 import axios from 'axios';
 import EditCountyModal from './EditCountyModal';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 const County = () => {
    const [isEditOpen, setIsEditOpen] = useState(false);
@@ -27,7 +27,7 @@ const County = () => {
       setIsOpen(false); // Close modal after submission
     } catch (error) {
       console.error("Error adding county:", error);
-      toast.error("Error adding county. Please try again.");
+      toast.error("Error adding county. Please try again.", {autoClose: 1500});
     }
   };
   
@@ -59,19 +59,32 @@ const County = () => {
       fetchAllCounty(); // Call fetchAllCounty on component mount
     }, []);
 
-     // Delete state with Toast
-  const handleDeleteState = async (countyId) => {
-    try {
-
-      await axios.delete(`${import.meta.env.VITE_API_URL}/counties/${countyId}`);
-
-      setCounty(county.filter((county) => county.id !== countyId));
-      toast.success("County deleted successfully!");
-    } catch (error) {
-      console.error("Error deleting county:", error);
-      toast.error("Failed to delete county. Please try again.");
-    }
-  };
+    const handleDeleteCounty = async (countyId) => {
+      const confirmDelete = await Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "rgba(14,153,223,1)",
+        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "Cancel"
+      });
+    
+      if (confirmDelete.isConfirmed) {
+        try {
+          await axios.delete(`${import.meta.env.VITE_API_URL}/counties/${countyId}`);
+          
+          setCounty(county.filter((county) => county.id !== countyId));
+          toast.success("County deleted successfully!" , {autoClose: 1500});
+        } catch (error) {
+          console.error("Error deleting county:", error);
+          toast.error("Failed to delete county. Please try again.", {autoClose: 1500});
+        }
+      } else if (confirmDelete.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire("Cancelled", "Your county is safe!", "info");
+      }
+    };
 
 
   return (
@@ -82,13 +95,18 @@ const County = () => {
           <div className="card-header bg-light d-flex justify-content-between align-items-center py-2">
             <h6 className="mb-0 text-info">County</h6>
             <div>
-              <button style={{ background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }} className="btn btn-sm me-1">                            <FaExclamation color="white" size={16} />
-              </button>
-              <button 
-                onClick={() => setIsOpen(true)} // Open modal on click
-                style={{background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }} className="btn btn-sm ">
-                <FaPlus color="white" size={16} />
-              </button>
+                 <button 
+                              onClick={() => setIsOpen(true)} // Open modal on click
+                              style={{
+                              display: 'flex',           
+                              alignItems: 'center',      
+                              justifyContent: 'center',  
+                              background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)'
+                            }}
+                            className="btn btn-sm"
+                          >
+                            <FaPlus color="white" size={16} />                           
+                             </button>
             </div>
           </div>
                 <div className="card-body p-0 custom-scrollbar overflow-auto" style={{ height: '200px', maxHeight: '200px' }}>
@@ -110,11 +128,11 @@ const County = () => {
                   <FaRegPenToSquare />
                 </div>
                 <div
-                onClick={() => handleDeleteState(county.id)}
+                onClick={() => handleDeleteCounty(county.id)}
                 className="d-flex justify-content-center align-items-center p-2 bg-danger bg-opacity-10 text-danger rounded-2" 
                   style={{ cursor: 'pointer', width: '1.75rem', height: '1.75rem' }}>
                   <RiDeleteBin6Line />
-            </div>
+             </div>
           </div>
         </li>
       ))}

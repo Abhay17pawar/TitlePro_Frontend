@@ -9,6 +9,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { FaRegPenToSquare } from "react-icons/fa6";
 import EditTransactionTypeModal from "./EditTransactionModal";
 import { useAuth } from "../../../Context/AuthContext";
+import Swal from "sweetalert2";
 
 export default function TransactionType() {
   const [contactTypes, setContactTypes] = useState([]);
@@ -75,21 +76,34 @@ export default function TransactionType() {
   };
 
   const handleDeleteContact = async (transactionId) => {
-    try {
-
-      const response = await axios.delete(`${import.meta.env.VITE_API_URL}/transactions/${transactionId}`);
-
-      if (response.data.success) {
-        // Remove the deleted contact from the state
-        setContactTypes(contactTypes.filter(transaction => transaction.id !== transactionId));
-        setContacts(contacts.filter(transaction => transaction.id !== transactionId));
-        toast.success("Transaction Type deleted successfully.", { autoClose: 1500 });
-      } else {
-        toast.error("Failed to delete Transaction Type.", { autoClose: 1500 });
+    const confirmDelete = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "rgba(14,153,223,1)",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel"
+    });
+  
+    if (confirmDelete.isConfirmed) {
+      try {
+        const response = await axios.delete(`${import.meta.env.VITE_API_URL}/transactions/${transactionId}`);
+        
+        if (response.data.success) {
+          setContactTypes(contactTypes.filter(transaction => transaction.id !== transactionId));
+          setContacts(contacts.filter(transaction => transaction.id !== transactionId));
+          toast.success("Transaction Type deleted successfully.", { autoClose: 1500 });
+        } else {
+          toast.error("Failed to delete Transaction Type.", { autoClose: 1500 });
+        }
+      } catch (error) {
+        console.error("Error deleting transaction type:", error);
+        toast.error("Error deleting Transaction Type.", { autoClose: 1500 });
       }
-    } catch (error) {
-      console.error("Error deleting transaction type:", error);
-      toast.error("Error deleting Transaction Type.", { autoClose: 1500 });
+    } else if (confirmDelete.dismiss === Swal.DismissReason.cancel) {
+      Swal.fire("Cancelled", "Your transaction type is safe!", "info");
     }
   };
 

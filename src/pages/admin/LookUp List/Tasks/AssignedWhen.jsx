@@ -1,6 +1,6 @@
 import React from 'react'
 import { MdOutlineCircle } from "react-icons/md";
-import { FaExclamation } from "react-icons/fa";
+import { FaExclamation, FaPlus } from "react-icons/fa";
 import "../Order/scroller.css";
 import { FaRegPenToSquare } from 'react-icons/fa6';
 import { RiDeleteBin6Line } from 'react-icons/ri';
@@ -23,8 +23,17 @@ const AssignedWhen = () => {
     <div className="card-header bg-light d-flex justify-content-between align-items-center py-2">
       <h6 className="mb-0 text-info">Assigned When</h6>
       <div>
-      <button style={{background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }} className="btn btn-sm">                              <FaExclamation  color="white" size={16} />
-        </button>
+       <button 
+            style={{
+            display: 'flex',           
+            alignItems: 'center',      
+            justifyContent: 'center',  
+            background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)'
+          }}
+          className="btn btn-sm"
+        >
+          <FaPlus color="white" size={16} />                           
+            </button>
       </div>
     </div>
     <div className="card-body p-0 custom-scrollbar overflow-auto" style={{ height: '200px', maxHeight: '200px' }}>
