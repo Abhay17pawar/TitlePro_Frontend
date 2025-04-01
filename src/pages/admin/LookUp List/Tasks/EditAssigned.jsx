@@ -1,16 +1,18 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Modal, Form, Button } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { useAuth } from "../../../../Context/AuthContext";
 
-const EditContactType = ({ isOpen, setIsOpen, onSubmit, editState, token }) => {
+const EditAssignedWhen = ({ isOpen, setIsOpen, onSubmit, editState }) => {
   const { control, handleSubmit, reset, formState: { errors } } = useForm();
+  const { token } = useAuth();
 
   useEffect(() => {
     if (isOpen && editState) {
       reset({
-        contact_type: editState.contact_type,
+        assigned_name: editState.assigned_name, 
       });
     }
   }, [isOpen, editState, reset]);
@@ -18,54 +20,54 @@ const EditContactType = ({ isOpen, setIsOpen, onSubmit, editState, token }) => {
   const handleFormSubmit = async (data) => {
     try {
       const requestData = {
-        contact_type: data.contact_type,
+        assigned_name: data.assigned_name, 
       };
-
-      const response = await axios.patch(`${import.meta.env.VITE_API_URL}/contact-types/${editState.id}`, requestData, {
+  
+      const response = await axios.patch(`${import.meta.env.VITE_API_URL}/assigned/${editState.id}`, requestData, {
         headers: {
-          "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`, // Pass the token here
+          Authorization: `Bearer ${token}`,
         },
       });
-
+  
       if (response.data.success) {
-        toast.success("Contact Type updated successfully!", { autoClose: 1500 });
+        toast.success("Assigned When updated successfully!", { autoClose: 1500 });
         onSubmit({ ...editState, ...requestData });
         setIsOpen(false);
       } else {
-        toast.error(response.data.message || "Failed to update Contact Type.", { autoClose: 1500 });
+        toast.error(response.data.message || "Failed to update Assigned When.", { autoClose: 1500 });
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while updating Contact Type.";
+      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while updating the Assigned When.";
       toast.error(errorMessage, { autoClose: 1500 });
     }
-  };
+  };  
 
   return (
     <Modal show={isOpen} onHide={() => setIsOpen(false)} size="sm" centered>
       <Modal.Header closeButton>
-        <Modal.Title className="h6">Edit Contact Type</Modal.Title>
+        <Modal.Title className="h6">Edit Assigned When</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit(handleFormSubmit)}>
 
           {/* State Name Input */}
           <Form.Group controlId="formStateName" className="mb-3">
-            <Form.Label className="text-muted mb-0">Contact Type</Form.Label>
+            <Form.Label className="text-muted mb-0">Assigned When</Form.Label>
             <Controller
-              name="contact_type"
+              name="assigned_name"
               control={control}
-              rules={{ required: "Contact Type is required" }}
+              rules={{ required: "Assigned When is required" }}
               render={({ field }) => (
                 <>
                   <Form.Control
                     type="text"
                     {...field}
-                    isInvalid={!!errors.contact_type}
+                    value={field.value || ""}
+                    isInvalid={!!errors.assigned_name}
                   />
-                  {errors.contact_type && (
+                  {errors.assigned_name && (
                     <Form.Control.Feedback type="invalid">
-                      {errors.contact_type.message}
+                      {errors.assigned_name.message}
                     </Form.Control.Feedback>
                   )}
                 </>
@@ -75,10 +77,7 @@ const EditContactType = ({ isOpen, setIsOpen, onSubmit, editState, token }) => {
 
           {/* Submit Button */}
           <Button
-            style={{
-              border: "none",
-              background: "linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)"
-            }}
+            style={{ border: "none", background: "linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)" }}
             className="w-100"
             type="submit"
           >
@@ -90,5 +89,4 @@ const EditContactType = ({ isOpen, setIsOpen, onSubmit, editState, token }) => {
   );
 };
 
-export default EditContactType;
-
+export default EditAssignedWhen;

@@ -118,7 +118,7 @@ const ContactTable = () => {
         }
       } catch (error) {
         console.error("Error deleting Contact:", error);
-        toast.error("Error deleting Contact", { autoClose: 1500 });
+        toast.error(error.response?.data?.message, { autoClose: 1500 });
       }
     } else if (confirmDelete.dismiss === Swal.DismissReason.cancel) {
       Swal.fire("Cancelled", "Your Contact is safe!", "info");

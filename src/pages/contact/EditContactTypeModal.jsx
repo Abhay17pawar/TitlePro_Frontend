@@ -175,7 +175,8 @@ useEffect(() => {
         toast.error('Failed to update contact', { autoClose: 1500 });
       }
     } catch (error) {
-      toast.error('An error occurred while updating the contact', { autoClose: 1500 });
+      const errorMessage = error.response?.data?.message || "An error occurred while adding contact.";
+      toast.error(errorMessage, { autoClose: 1500 });
     }
   };
 

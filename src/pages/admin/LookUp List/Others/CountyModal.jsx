@@ -69,13 +69,13 @@ const AddCountyModal = ({ isOpen, setIsOpen, onSubmit }) => {
         onSubmit(requestData);
         setIsOpen(false);
         reset();
-        setSelectedState(null); // Reset selected state
+        setSelectedState(null); 
       } else {
         toast.error(result.message || "Failed to add county.");
       }
     } catch (error) {
-      console.error("Error submitting county:", error); // Log detailed error
-      toast.error("An error occurred while adding county.");
+      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while adding County.";
+      toast.error(errorMessage, { autoClose: 1500 });
     }
   };
 

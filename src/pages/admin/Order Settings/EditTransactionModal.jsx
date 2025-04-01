@@ -41,7 +41,8 @@ const EditTransactionTypeModal = ({ isOpen, setIsOpen, onSubmit, editContact }) 
         toast.error("Failed to update transaction type.", { autoClose: 1500 });
       }
     } catch (error) {
-      toast.error("An error occurred while updating transaction type.", { autoClose: 1500 });
+      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while updating transaction type.";
+      toast.error(errorMessage, { autoClose: 1500 });
     }
   };
 

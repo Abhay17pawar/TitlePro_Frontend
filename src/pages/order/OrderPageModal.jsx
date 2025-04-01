@@ -193,10 +193,8 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
         toast.error(response.data.message || "Failed to create order.");
       }
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || "An error occurred while creating the order.",
-        { autoClose: 1500 }
-      );
+      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while creating Order.";
+      toast.error(errorMessage, { autoClose: 1500 });
     }
   };
 

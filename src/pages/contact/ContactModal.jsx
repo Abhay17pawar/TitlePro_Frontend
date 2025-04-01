@@ -97,39 +97,41 @@ const AddContactModal = ({ isOpen, setIsOpen, onSubmit }) => {
   const handleFormSubmit = async (data) => {
     try {
       const userId = JSON.parse(localStorage.getItem("user"));
+      
       if (!token) {
         toast.error("No token found, please log in.");
         return;
       }
-
+  
       if (!userId) {
         toast.error("No user ID found.");
         return;
       }
-
+  
       const requestData = { ...data, user_id: userId.id };
-
+  
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/contacts`, requestData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
-
+  
       const result = response.data;
-
+  
       if (result.success) {
         toast.success("Contact added successfully!", { autoClose: 1500 });
         onSubmit(result.data);
         setIsOpen(false);
         reset();
       } else {
-        toast.error(result.message || "Failed to add contact.");
+        toast.error(result.message || "Failed to add contact.", { autoClose: 1500 });
       }
     } catch (error) {
-      toast.error("An error occurred while adding contact.");
+      const errorMessage = error.response?.data?.message || "An error occurred while adding contact.";
+      toast.error(errorMessage, { autoClose: 1500 });
     }
-  };
+  };  
 
   return (
     <Modal show={isOpen} onHide={() => setIsOpen(false)} size="md" centered>

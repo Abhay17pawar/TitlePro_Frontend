@@ -4,28 +4,28 @@ import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import TransactionTypeModal from "./TransactionTypeModal";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { FaRegPenToSquare } from "react-icons/fa6";
-import EditTransactionTypeModal from "./EditTransactionModal";
-import { useAuth } from "../../../Context/AuthContext";
 import Swal from "sweetalert2";
+import WorkflowModal from "./WorkFlowModal";
+import EditWorkflow from "./EditWorkflow";
 
-export default function TransactionType() {
+export default function WorkflowGroup() {
   const [contactTypes, setContactTypes] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [contacts, setContacts] = useState([]);
   const [isAddOpen, setIsAddOpen] = useState(false); // Separate modal state for adding
-  const [isEditOpen, setIsEditOpen] = useState(false); // Separate modal state for editing
-  const [editContact, setEditContact] = useState(null); // State for the contact to be edited
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [states, setStates] = useState([]); // Correct state to manage fetched 
+  const [editState, setEditState] = useState(null);
   const contactsPerPage = 8;
   const navigate = useNavigate();
 
   const fetchAllContacts = async () => {
     try {
 
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/transactions`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/workflows`);
 
       const { data } = response;
 
@@ -37,7 +37,7 @@ export default function TransactionType() {
         setContacts([]);
       }
     } catch (error) {
-      console.error("Error fetching contacts:", error);
+      console.error("Error fetching Workflow Group:", error);
       setContactTypes([]);
       setContacts([]);
     }
@@ -58,14 +58,12 @@ export default function TransactionType() {
   
       setIsAddOpen(false); // Close modal after submission
     } catch (error) {
-      console.error("Error adding transaction:", error);
-      toast.error("Error adding Transaction Type.");
+      console.error("Error adding Workflow Group:", error);
+      toast.error("Error adding Workflow Group.");
     }
   };
   
-
-  // Handle editing an existing contact type
-  const handleEditTransactionType = (updatedContact) => {
+  const handleEditWorkflow = (updatedContact) => {
     setContactTypes(contactTypes.map(contact => 
       contact.id === updatedContact.id ? updatedContact : contact
     ));
@@ -89,21 +87,21 @@ export default function TransactionType() {
   
     if (confirmDelete.isConfirmed) {
       try {
-        const response = await axios.delete(`${import.meta.env.VITE_API_URL}/transactions/${transactionId}`);
+        const response = await axios.delete(`${import.meta.env.VITE_API_URL}/workflows/${transactionId}`);
         
         if (response.data.success) {
           setContactTypes(contactTypes.filter(transaction => transaction.id !== transactionId));
           setContacts(contacts.filter(transaction => transaction.id !== transactionId));
-          toast.success("Transaction Type deleted successfully.", { autoClose: 1500 });
+          toast.success("Workflow Group deleted successfully.", { autoClose: 1500 });
         } else {
-          toast.error("Failed to delete Transaction Type.", { autoClose: 1500 });
+          toast.error("Failed to delete Workflow Group.", { autoClose: 1500 });
         }
       }catch (error) {
-        const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while deleting transaction Type.";
+        const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while deleting Workflow Group.";
         toast.error(errorMessage, { autoClose: 1500 });
       }
     } else if (confirmDelete.dismiss === Swal.DismissReason.cancel) {
-      Swal.fire("Cancelled", "Your transaction type is safe!", "info");
+      Swal.fire("Cancelled", "Your Workflow Group is safe!", "info");
     }
   };
 
@@ -116,7 +114,7 @@ export default function TransactionType() {
   return (
     <div className="container-fluid p-0">
       <div className="p-3">
-        <h4 className="mb-4">Transaction Types</h4>
+        <h4 className="mb-4">Workflow Groups</h4>
 
         {/* Search and Action Buttons */}
         <div className="d-flex justify-content-end mb-3">
@@ -143,16 +141,7 @@ export default function TransactionType() {
                   }}
                   className="text-white fw-normal"
                 >
-                  Product Type
-                </th>
-                <th
-                  style={{
-                    border: "none",
-                    background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)',
-                  }}
-                  className="text-white fw-normal"
-                >
-                  Transaction Type
+                  Name
                 </th>
                 <th
                   style={{
@@ -170,6 +159,24 @@ export default function TransactionType() {
                   }}
                   className="text-white fw-normal"
                 >
+                  Created On
+                </th>
+                <th
+                  style={{
+                    border: "none",
+                    background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)',
+                  }}
+                  className="text-white fw-normal"
+                >
+                  Last Modified On
+                </th>
+                <th
+                  style={{
+                    border: "none",
+                    background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)',
+                  }}
+                  className="text-white fw-normal"
+                >
                   Action
                 </th>
               </tr>
@@ -177,18 +184,19 @@ export default function TransactionType() {
             <tbody>
               {currentContacts.map((contact, index) => (
                 <tr key={contact.id} className={index % 2 === 0 ? "bg-white" : "bg-light"}>
-                  <td className="text-muted">{contact.product_name}</td>
-                  <td className="text-muted">{contact.transaction_name}</td>
+                  <td className="text-muted">{contact.work_name}</td>
                   <td className="text-muted">{JSON.parse(localStorage.getItem("user"))?.name}</td>
+                  <td className="text-muted">{contact.CreatedOn}</td>
+                  <td className="text-muted">{contact.LastModifyOn}</td>
                   <td className="text-muted">
                     <div className="d-flex align-items-center ms-auto">
                       <div
                         className="d-flex justify-content-center align-items-center p-2 bg-primary bg-opacity-10 text-primary me-2 rounded-2"
                         style={{ cursor: 'pointer', width: '1.75rem', height: '1.75rem' }}
                         onClick={() => {
-                          setEditContact(contact);
-                          setIsEditOpen(true); // Open Edit Modal
-                        }}
+                            setEditState(contact);
+                            setIsEditOpen(true);
+                          }}
                       >
                         <FaRegPenToSquare />
                       </div>
@@ -238,8 +246,8 @@ export default function TransactionType() {
       </div>
 
       {/* Conditionally render Add or Edit modal */}
-      {isAddOpen && <TransactionTypeModal isOpen={isAddOpen} setIsOpen={setIsAddOpen} onSubmit={handleAddContactType} />}
-      {isEditOpen && <EditTransactionTypeModal isOpen={isEditOpen} setIsOpen={setIsEditOpen} onSubmit={handleEditTransactionType} editContact={editContact} />}
+      {isAddOpen && <WorkflowModal isOpen={isAddOpen} setIsOpen={setIsAddOpen} onSubmit={handleAddContactType} />}
+      {isEditOpen && <EditWorkflow isOpen={isEditOpen} setIsOpen={setIsEditOpen} onSubmit={handleEditWorkflow} editState={editState} />}
     </div>
   );
 }

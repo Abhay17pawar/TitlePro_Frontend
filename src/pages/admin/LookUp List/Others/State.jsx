@@ -29,7 +29,8 @@ const State = () => {
         setStates([]);
       }
     } catch (error) {
-      console.error("Error fetching states:", error);
+      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while fetching states.";
+      toast.error(errorMessage, { autoClose: 1500 });
       setStates([]);
     }
   };
@@ -67,10 +68,10 @@ const State = () => {
         await axios.delete(`${import.meta.env.VITE_API_URL}/states/${stateId}`);
         
         setStates(states.filter((state) => state.id !== stateId));
-        toast.success("State deleted successfully!");
+        toast.success("State deleted successfully!" , {autoClose: 1500});
       } catch (error) {
-        console.error("Error deleting state:", error);
-        toast.error("Failed to delete state. Please try again.");
+        const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while deleting State.";
+        toast.error(errorMessage, { autoClose: 1500 });
       }
     } else if (confirmDelete.dismiss === Swal.DismissReason.cancel) {
       Swal.fire("Cancelled", "Your state is safe!", "info");

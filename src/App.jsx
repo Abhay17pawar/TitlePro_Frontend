@@ -20,6 +20,7 @@ import LookupList from "./pages/admin/LookUp List/LookupList";
 import TransactionType from "./pages/admin/Order Settings/TransactionType";
 import ProductType from "./pages/admin/Order Settings/ProductType";
 import { AuthProvider } from "./Context/AuthContext";
+import WorkflowGroup from "./pages/admin/Workflow/WorkflowGroup";
 
 const App = () => {
   return (
@@ -48,6 +49,7 @@ const App = () => {
         <Route path="/lookuplist-worksheet" element={<LookupList />} />
         <Route path="/lookuplist-accounting" element={<LookupList />} />
         <Route path="/transaction-type" element={<TransactionType />} />
+        <Route path="/workflow-group" element={<WorkflowGroup />} />
       </Routes>
       <ToastContainer />
     </AuthProvider>

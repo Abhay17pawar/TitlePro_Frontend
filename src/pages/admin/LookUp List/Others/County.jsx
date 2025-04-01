@@ -27,7 +27,7 @@ const County = () => {
       setIsOpen(false); // Close modal after submission
     } catch (error) {
       console.error("Error adding county:", error);
-      toast.error("Error adding county. Please try again.", {autoClose: 1500});
+      toast.error(error?.message, {autoClose: 1500});
     }
   };
   
@@ -50,8 +50,9 @@ const County = () => {
           setCounty([]); // If response format is unexpected, set state to empty array
         }
       } catch (error) {
-        console.error("Error fetching States:", error);
-        setCounty([]); // Handle error by setting state to empty array
+          const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while adding County.";
+          toast.error(errorMessage, { autoClose: 1500 });
+          setCounty([]); // Handle error by setting state to empty array
       }
     };
   
@@ -78,8 +79,8 @@ const County = () => {
           setCounty(county.filter((county) => county.id !== countyId));
           toast.success("County deleted successfully!" , {autoClose: 1500});
         } catch (error) {
-          console.error("Error deleting county:", error);
-          toast.error("Failed to delete county. Please try again.", {autoClose: 1500});
+          const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while deleting County.";
+          toast.error(errorMessage, { autoClose: 1500 });
         }
       } else if (confirmDelete.dismiss === Swal.DismissReason.cancel) {
         Swal.fire("Cancelled", "Your county is safe!", "info");

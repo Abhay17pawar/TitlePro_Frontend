@@ -40,7 +40,8 @@ const OrdersTable = () => {
         console.error("No orders found in the response.");
       }
     } catch (error) {
-      console.error("Error fetching orders:", error);
+      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while fetching Order.";
+      toast.error(errorMessage, { autoClose: 1500 });
     }
   };
 

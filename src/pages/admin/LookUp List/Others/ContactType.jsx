@@ -39,8 +39,9 @@ const ContactType = () => {
       } else {
         setContactTypes([]);
       }
-    } catch (error) {
-      console.error("Error fetching contacts:", error);
+    }catch (error) {
+      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while fetching Contact Type.";
+      toast.error(errorMessage, { autoClose: 1500 });
       setContactTypes([]);
     }
   };
@@ -84,7 +85,8 @@ const ContactType = () => {
             setContactTypes(contactTypes.filter((contact) => contact.id !== productId));
             toast.success("Contact Type deleted successfully!", { autoClose: 1500 });
           } catch (error) {
-            toast.error("Failed to delete Contact Type. Please try again.", { autoClose: 1500 });
+            const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while deleting Contact Type.";
+            toast.error(errorMessage, { autoClose: 1500 });
           }
         } else if (result.dismiss === Swal.DismissReason.cancel) {
           Swal.fire("Cancelled", "Your Contact type is safe!", "info");

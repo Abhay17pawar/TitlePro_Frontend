@@ -41,7 +41,8 @@ const EditStateModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
         toast.error(response.data.message || "Failed to update state.");
       }
     } catch (error) {
-      toast.error("An error occurred while updating the state.");
+      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while updating state.";
+      toast.error(errorMessage, { autoClose: 1500 });
     }
   };
 

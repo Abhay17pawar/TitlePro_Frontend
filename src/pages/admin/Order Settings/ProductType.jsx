@@ -28,7 +28,8 @@ const ProductType = () => {
         setContactTypes([]); // Set empty array if no data
       }
     } catch (error) {
-      console.error("Error fetching contacts:", error);
+      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while fetching Product Type.";
+      toast.error(errorMessage, { autoClose: 1500 });
       setContactTypes([]); // Handle error and clear contact types
     }
   };

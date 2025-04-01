@@ -42,7 +42,8 @@ const EditCountyModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
         toast.error(response.data.message || "Failed to update county.");
       }
     } catch (error) {
-      toast.error("An error occurred while updating the county.");
+      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while updating County.";
+      toast.error(errorMessage, { autoClose: 1500 });
     }
   };
 

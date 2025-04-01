@@ -67,7 +67,8 @@ const TransactionTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
         toast.error("Failed to add transaction type.", { autoClose: 1500 });
       }
     } catch (error) {
-      toast.error("An error occurred while adding transaction type.", { autoClose: 1500 });
+      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while adding Transaction Type.";
+      toast.error(errorMessage, { autoClose: 1500 });
     }
   };
 
