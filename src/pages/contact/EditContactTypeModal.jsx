@@ -20,7 +20,7 @@ const EditContactModal = ({ isOpen, setIsOpen, onSubmit, editContact }) => {
     const fetchContactTypes = async () => {
       try {
         const response = await axios.get(
-          "https://titlepro-backend-final.onrender.com/contact-types",
+          `${import.meta.env.VITE_API_URL}/contact-types`,
           {
             headers: { "Content-Type": "application/x-www-form-urlencoded",
                 Authorization: `Bearer ${token}`
@@ -54,7 +54,7 @@ const EditContactModal = ({ isOpen, setIsOpen, onSubmit, editContact }) => {
     const fetchStates = async () => {
       try {
         const response = await axios.get(
-          "https://titlepro-backend-final.onrender.com/states",
+          `${import.meta.env.VITE_API_URL}/states`,
           {
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
           }
@@ -85,7 +85,7 @@ const EditContactModal = ({ isOpen, setIsOpen, onSubmit, editContact }) => {
     if (option?.value) {
       try {
         const response = await axios.get(
-          `https://titlepro-backend-final.onrender.com/counties/states/${option.value}`,
+          `${import.meta.env.VITE_API_URL}/counties/states/${option.value}`,
           { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
         );
 

@@ -56,7 +56,7 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
   useEffect(() => {
     const fetchStates = async () => {
       try {
-        const response = await axios.get("https://titlepro-backend-final.onrender.com/states", {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/states`, {
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
         });
 
@@ -81,7 +81,7 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("https://titlepro-backend-final.onrender.com/products", {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/products`, {
           headers: { "Content-Type": "application/json" },
         });
 
@@ -108,7 +108,7 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
     if (option?.value) {
       try {
         const response = await axios.get(
-          `https://titlepro-backend-final.onrender.com/transactions/${option.value}`,
+          `${import.meta.env.VITE_API_URL}/transactions/${option.value}`,
           { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
         );
 
@@ -137,7 +137,7 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
     if (option?.value) {
       try {
         const response = await axios.get(
-          `https://titlepro-backend-final.onrender.com/counties/states/${option.value}`,
+          `${import.meta.env.VITE_API_URL}/counties/states/${option.value}`,
           { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
         );
 
