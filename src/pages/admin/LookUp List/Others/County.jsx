@@ -9,13 +9,15 @@ import axios from 'axios';
 import EditCountyModal from './EditCountyModal';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import { useAuth } from '../../../../Context/AuthContext';
 
 const County = () => {
    const [isEditOpen, setIsEditOpen] = useState(false);
    const [editState, setEditState] = useState(null);
    const [county, setCounty] = useState([]);  // Array to store fetched states
    const [isOpen, setIsOpen] = useState(false);  // State to control modal open/close
-
+   const { token } = useAuth();
+   
    const handleCounty = async (newCounty) => {
     try {
       // Optimistically update state
@@ -40,7 +42,11 @@ const County = () => {
    // Fetch all contacts
     const fetchAllCounty = async () => {
       try {
-       const response = await axios.get(`${import.meta.env.VITE_API_URL}/counties`);
+       const response = await axios.get(`${import.meta.env.VITE_API_URL}/counties`, {
+        headers : {
+          'Authorization': `Bearer ${token}`, 
+        }
+       });
   
         const { data } = response;
   
@@ -74,7 +80,11 @@ const County = () => {
     
       if (confirmDelete.isConfirmed) {
         try {
-          await axios.delete(`${import.meta.env.VITE_API_URL}/counties/${countyId}`);
+          await axios.delete(`${import.meta.env.VITE_API_URL}/counties/${countyId}`,{
+            headers : {
+              'Authorization': `Bearer ${token}`, 
+            }
+          });
           
           setCounty(county.filter((county) => county.id !== countyId));
           toast.success("County deleted successfully!" , {autoClose: 1500});

@@ -3,10 +3,12 @@ import { Modal, Form, Button } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { useAuth } from "../../../../Context/AuthContext";
 
 const EditCountyModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
   const { control, handleSubmit, reset, formState: { errors } } = useForm();
-
+  const { token } = useAuth();
+  
   useEffect(() => {
     if (isOpen && editState) {
       reset({
@@ -21,12 +23,6 @@ const EditCountyModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
       const requestData = {
         county_name: data.county_name, // Only update county name
       };
-
-      const token = localStorage.getItem("token");
-      if (!token) {
-        toast.error("No token found, please log in.");
-        return;
-      }
 
       const response = await axios.patch(`${import.meta.env.VITE_API_URL}/counties/${editState.id}`, requestData, {
         headers: {

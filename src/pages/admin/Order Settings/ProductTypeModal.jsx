@@ -2,14 +2,20 @@ import { Modal, Form, Button } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import axios from "axios"; 
+import { useAuth } from "../../../Context/AuthContext";
 
 const AddProductTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
   const { control, handleSubmit, reset, formState: { errors } } = useForm();
+  const { token } = useAuth();
 
   const handleFormSubmit = async (data) => {
     try {
       
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/products`, data);
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/products`, data, {
+        headers : {
+          'Authorization': `Bearer ${token}`, 
+        }
+      });
 
       const result = response.data;
 

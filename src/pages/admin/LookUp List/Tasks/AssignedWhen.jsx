@@ -8,17 +8,23 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import EditAssignedWhen from './EditAssigned';
+import { useAuth } from '../../../../Context/AuthContext';
 
 const AssignedWhen = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editState, setEditState] = useState(null);
   const [states, setStates] = useState([]); // Correct state to manage fetched states
   const [isOpen, setIsOpen] = useState(false);
+  const { token } = useAuth();
 
   // Fetch all states
   const fetchAllStates = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/assigned`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/assigned` , {
+        headers : {
+          'Authorization': `Bearer ${token}`, 
+        }
+      });
       if (response.data.success && Array.isArray(response.data.data)) {
         setStates(response.data.data);
       } else {
@@ -60,7 +66,11 @@ const AssignedWhen = () => {
   
     if (confirmDelete.isConfirmed) {
       try {
-        await axios.delete(`${import.meta.env.VITE_API_URL}/assigned/${stateId}`);
+        await axios.delete(`${import.meta.env.VITE_API_URL}/assigned/${stateId}`, {
+          headers : {
+            'Authorization': `Bearer ${token}`, 
+          }
+        });
         
         setStates(states.filter((state) => state.id !== stateId));
         toast.success("Assigned When deleted successfully!" , {autoClose: 1500});

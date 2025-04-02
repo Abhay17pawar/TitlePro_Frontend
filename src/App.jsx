@@ -21,6 +21,7 @@ import TransactionType from "./pages/admin/Order Settings/TransactionType";
 import ProductType from "./pages/admin/Order Settings/ProductType";
 import { AuthProvider } from "./Context/AuthContext";
 import WorkflowGroup from "./pages/admin/Workflow/WorkflowGroup";
+import WorkflowDetails from "./pages/admin/Workflow/WorkflowDetails";
 
 const App = () => {
   return (
@@ -50,6 +51,7 @@ const App = () => {
         <Route path="/lookuplist-accounting" element={<LookupList />} />
         <Route path="/transaction-type" element={<TransactionType />} />
         <Route path="/workflow-group" element={<WorkflowGroup />} />
+        <Route path="/details/:id" element={<WorkflowDetails />} />
       </Routes>
       <ToastContainer />
     </AuthProvider>

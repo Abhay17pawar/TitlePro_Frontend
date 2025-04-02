@@ -4,16 +4,22 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import Select from "react-select";
 import axios from "axios";
+import { useAuth } from "../../../../Context/AuthContext";
 
 const AddCountyModal = ({ isOpen, setIsOpen, onSubmit }) => {
   const { control, handleSubmit, reset, formState: { errors } } = useForm();
   const [states, setStates] = useState([]); // Store states
   const [selectedState, setSelectedState] = useState(null); // Store selected state
+  const { token } = useAuth();
 
   // Fetch states when modal opens
   useEffect(() => {
     if (isOpen) {
-      axios.get(`${import.meta.env.VITE_API_URL}/states`) // Fetch states from the API
+      axios.get(`${import.meta.env.VITE_API_URL}/states`,{
+        headers : {
+          'Authorization': `Bearer ${token}`, 
+        }
+      }) // Fetch states from the API
         .then(response => {
           const stateArray = response.data?.data || []; // Ensure correct array format
           const stateOptions = stateArray.map(state => ({
@@ -49,7 +55,6 @@ const AddCountyModal = ({ isOpen, setIsOpen, onSubmit }) => {
 
       console.log("Request Data:", requestData); // Log the request before sending
 
-      const token = localStorage.getItem("token");
       if (!token) {
         console.error("No token found, please log in.");
         toast.error("No token found, please log in.", { autoClose: 1500 });

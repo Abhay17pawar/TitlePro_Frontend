@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import OrderPageModal from "./OrderPageModal";
 import { useAuth } from "../../Context/AuthContext";
 
-// Sample data for the orders table (removed, since it's replaced by the API call)
 const OrdersTable = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");

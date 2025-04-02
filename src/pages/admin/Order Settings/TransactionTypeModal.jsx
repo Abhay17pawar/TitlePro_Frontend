@@ -4,16 +4,22 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import Select from "react-select";
 import axios from "axios";
+import { useAuth } from "../../../Context/AuthContext";
 
 const TransactionTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
   const { control, handleSubmit, reset, formState: { errors } } = useForm();
   const [productOptions, setProductOptions] = useState([]); // Store products
   const [selectedProduct, setSelectedProduct] = useState(null); // Store selected product
-  
+  const { token } = useAuth();
+
   // Fetch product types when modal opens
   useEffect(() => {
     if (isOpen) {
-      axios.get(`${import.meta.env.VITE_API_URL}/products`)
+      axios.get(`${import.meta.env.VITE_API_URL}/products` , {
+        headers : {
+          'Authorization': `Bearer ${token}`, 
+        }
+      })
         .then(response => {
           const productsArray = response.data?.data || []; // Ensure correct array
           const products = productsArray.map(product => ({
@@ -53,6 +59,7 @@ const TransactionTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/transactions`, requestData, {
         headers: {
           "Content-Type": "application/json",
+            'Authorization': `Bearer ${token}`
         },
       });
 

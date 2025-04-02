@@ -5,6 +5,7 @@ import AddContactModal from "./ContactModal"; // Import the modal
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom"; // Assuming you're using react-router-dom for navigation
+import { useAuth } from "../../Context/AuthContext";
 
 export default function DeletedContactTable() {
   const [activeTab, setActiveTab] = useState("Active");
@@ -15,11 +16,10 @@ export default function DeletedContactTable() {
   const [contact, setContact] = useState([]); // New contact state
   const contactsPerPage = 8;
   const navigate = useNavigate();
-
+  const {token} = useAuth();
   // Fetch all contacts
   const fetchAllContacts = async () => {
     try {
-      const token = localStorage.getItem('token');
       if (!token) {
       toast.error("No token found! redirecting to login", { autoClose: 1500 });
         navigate("/");

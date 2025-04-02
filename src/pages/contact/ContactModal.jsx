@@ -44,7 +44,9 @@ const AddContactModal = ({ isOpen, setIsOpen, onSubmit }) => {
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/states`,
           {
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            headers: { "Content-Type": "application/x-www-form-urlencoded" ,
+              'Authorization': `Bearer ${token}`, 
+            }
           }
         );
 
@@ -72,7 +74,10 @@ const AddContactModal = ({ isOpen, setIsOpen, onSubmit }) => {
       try {
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/counties/states/${option.value}`,
-          { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+          { headers: { "Content-Type": "application/x-www-form-urlencoded" ,
+            'Authorization': `Bearer ${token}`, 
+          }
+         }
         );
     
         if (response.data?.data && Array.isArray(response.data.data)) {
@@ -128,7 +133,7 @@ const AddContactModal = ({ isOpen, setIsOpen, onSubmit }) => {
         toast.error(result.message || "Failed to add contact.", { autoClose: 1500 });
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.message || "An error occurred while adding contact.";
+      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while adding contact.";
       toast.error(errorMessage, { autoClose: 1500 });
     }
   };  

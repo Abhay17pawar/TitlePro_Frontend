@@ -9,16 +9,22 @@ import { Smile } from 'lucide-react';
 import Swal from 'sweetalert2';
 import AddProductTypeModal from './ProductTypeModal';
 import EditProductTypeModal from './EditProductTypeModal';
+import { useAuth } from '../../../../Context/AuthContext';
 
 const ProductType = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editState, setEditState] = useState(null);
   const [contactTypes, setContactTypes] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+  const { token } = useAuth();
 
   const fetchAllProductType = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/products`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/products` , {
+        headers : {
+          'Authorization': `Bearer ${token}`, 
+        }
+      });
       const { data } = response;
       console.log("data", data);
       if (data.success && Array.isArray(data.data)) {
@@ -49,7 +55,11 @@ const ProductType = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`${import.meta.env.VITE_API_URL}/products/${productId}`);
+          await axios.delete(`${import.meta.env.VITE_API_URL}/products/${productId}` , {
+            headers : {
+              'Authorization': `Bearer ${token}`, 
+            }
+          });
           setContactTypes(contactTypes.filter((product) => product.id !== productId));
           toast.success("Product Type deleted successfully!", { autoClose: 1500 });
         } catch (error) {

@@ -3,9 +3,11 @@ import { Modal, Form, Button } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { useAuth } from "../../../Context/AuthContext";
 
 const EditWorkflow = ({ isOpen, setIsOpen, onSubmit, editState }) => {
   const { control, handleSubmit, reset, formState: { errors } } = useForm();
+  const { token } = useAuth();
 
   useEffect(() => {
     if (isOpen && editState) {
@@ -21,7 +23,11 @@ const EditWorkflow = ({ isOpen, setIsOpen, onSubmit, editState }) => {
         work_name: data.work_name, 
       };
   
-      const response = await axios.patch(`${import.meta.env.VITE_API_URL}/workflows/${editState.id}`, requestData);
+      const response = await axios.patch(`${import.meta.env.VITE_API_URL}/workflows/${editState.id}`, requestData , {
+        headers : {
+          'Authorization': `Bearer ${token}`, 
+        }
+      });
   
       if (response.data.success) {
         toast.success("Workflow Group updated successfully!", { autoClose: 1500 });

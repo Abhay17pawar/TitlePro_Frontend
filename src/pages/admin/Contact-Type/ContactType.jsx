@@ -4,15 +4,16 @@ import { Plus, Trash2 } from "lucide-react";
 import AddContactTypeModal from "./ContactTypeModal"; // Import the modal
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useAuth } from "../../../Context/AuthContext";
 
 const ContactTypeTable = () => {
   const [contactTypes, setContactTypes] = useState([]);
   const [isOpen, setIsOpen] = useState(false); // Modal state
+  const { token } = useAuth();
 
   // Fetch all contacts
   const fetchAllContacts = async () => {
     try {
-      const token = localStorage.getItem('token');
       
       if (!token) {
         console.error("No token found, please log in.");

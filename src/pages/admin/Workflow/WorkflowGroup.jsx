@@ -9,6 +9,8 @@ import { FaRegPenToSquare } from "react-icons/fa6";
 import Swal from "sweetalert2";
 import WorkflowModal from "./WorkFlowModal";
 import EditWorkflow from "./EditWorkflow";
+import WorkflowDetails from "./WorkflowDetails";
+import { useAuth } from "../../../Context/AuthContext";
 
 export default function WorkflowGroup() {
   const [contactTypes, setContactTypes] = useState([]);
@@ -21,11 +23,17 @@ export default function WorkflowGroup() {
   const [editState, setEditState] = useState(null);
   const contactsPerPage = 8;
   const navigate = useNavigate();
+  const [selectedContact, setSelectedContact] = useState(null); // Track selected contact for details
+  const { token } = useAuth();
 
   const fetchAllContacts = async () => {
     try {
 
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/workflows`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/workflows`, {
+        headers : {
+          'Authorization': `Bearer ${token}`, 
+        }
+      });
 
       const { data } = response;
 
@@ -87,7 +95,11 @@ export default function WorkflowGroup() {
   
     if (confirmDelete.isConfirmed) {
       try {
-        const response = await axios.delete(`${import.meta.env.VITE_API_URL}/workflows/${transactionId}`);
+        const response = await axios.delete(`${import.meta.env.VITE_API_URL}/workflows/${transactionId}` , {
+          headers : {
+            'Authorization': `Bearer ${token}`, 
+          }
+        });
         
         if (response.data.success) {
           setContactTypes(contactTypes.filter(transaction => transaction.id !== transactionId));
@@ -184,7 +196,13 @@ export default function WorkflowGroup() {
             <tbody>
               {currentContacts.map((contact, index) => (
                 <tr key={contact.id} className={index % 2 === 0 ? "bg-white" : "bg-light"}>
-                  <td className="text-muted">{contact.work_name}</td>
+                  <td
+                    onClick={() => navigate(`/details/${contact.id}`)}      
+                    style={{ cursor: 'pointer' }}
+                    className="text-muted"
+                  >
+                    {contact.work_name}
+                  </td>
                   <td className="text-muted">{JSON.parse(localStorage.getItem("user"))?.name}</td>
                   <td className="text-muted">{contact.CreatedOn}</td>
                   <td className="text-muted">{contact.LastModifyOn}</td>
@@ -245,7 +263,6 @@ export default function WorkflowGroup() {
         </nav>
       </div>
 
-      {/* Conditionally render Add or Edit modal */}
       {isAddOpen && <WorkflowModal isOpen={isAddOpen} setIsOpen={setIsAddOpen} onSubmit={handleAddContactType} />}
       {isEditOpen && <EditWorkflow isOpen={isEditOpen} setIsOpen={setIsEditOpen} onSubmit={handleEditWorkflow} editState={editState} />}
     </div>

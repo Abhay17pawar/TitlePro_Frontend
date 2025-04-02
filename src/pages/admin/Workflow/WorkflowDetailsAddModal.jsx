@@ -2,33 +2,33 @@ import { Modal, Form, Button } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { useAuth } from "../../../../Context/AuthContext";
+import { useAuth } from "../../../Context/AuthContext";
 
-const AddAssignedModal = ({ isOpen, setIsOpen, onSubmit }) => {
+const AddWorkflowDetailsModal = ({ isOpen, setIsOpen, onSubmit }) => {
   const { control, handleSubmit, reset, formState: { errors } } = useForm();
   const { token } = useAuth();
-  
+
   const handleFormSubmit = async (data) => {
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/assigned`, data, {
         headers: {
           "Content-Type": "application/json",
-            'Authorization': `Bearer ${token}`, 
+          'Authorization': `Bearer ${token}`, 
         },
       });
   
       const result = response.data;
   
       if (result.success) {
-        toast.success("Assigned When added successfully!", { autoClose: 1500 });
+        toast.success("Workflow Details added successfully!", { autoClose: 1500 });
         onSubmit(result.data);
         setIsOpen(false);
         reset();
       } else {
-        toast.error(result.error?.errorMessage || 'Failed to add assigned when.', { autoClose: 1500 });
+        toast.error(result.error?.errorMessage || 'Failed to add Workflow Details.', { autoClose: 1500 });
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.error?.errorMessage || 'Something went wrong!';
+      const errorMessage = error.response?.data?.error?.errorMessage || 'An error occurred while adding Workflow Details!';
       toast.error(errorMessage, { autoClose: 1500 });
     }
   };  
@@ -36,14 +36,14 @@ const AddAssignedModal = ({ isOpen, setIsOpen, onSubmit }) => {
   return (
     <Modal show={isOpen} onHide={() => setIsOpen(false)} size="sm" centered>
       <Modal.Header closeButton>
-        <Modal.Title className="h6">Add Assigned When</Modal.Title>
+        <Modal.Title className="h6">Add Workflow Details</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit(handleFormSubmit)}>
           <Form.Group controlId="formContactType" className="mb-3">
-            <Form.Label className="text-muted">Assigned When</Form.Label>
+            <Form.Label className="text-muted">Workflow Details</Form.Label>
             <Controller
-              name="assigned_name"
+              name="workflow_name"
               control={control}
               rules={{ required: "Assigned name is required" }}
               render={({ field }) => (
@@ -51,12 +51,33 @@ const AddAssignedModal = ({ isOpen, setIsOpen, onSubmit }) => {
                   <Form.Control
                     type="text"
                     {...field}
-                    value={field.value || ''}  // Ensure the value is always a defined string
-                    isInvalid={!!errors.assigned_name}
+                    value={field.value || ''}  
+                    isInvalid={!!errors.workflow_name}
                   />
-                  {errors.assigned_name && (
+                  {errors.workflow_name && (
                     <Form.Control.Feedback type="invalid">
-                      {errors.assigned_name.message}
+                      {errors.workflow_name.message}
+                    </Form.Control.Feedback>
+                  )}
+                </>
+              )}
+            />
+            <Form.Label className="text-muted">Place After</Form.Label>
+            <Controller
+              name="workflow_name"
+              control={control}
+              rules={{ required: "Assigned name is required" }}
+              render={({ field }) => (
+                <>
+                  <Form.Control
+                    type="text"
+                    {...field}
+                    value={field.value || ''}  
+                    isInvalid={!!errors.workflow_name}
+                  />
+                  {errors.workflow_name && (
+                    <Form.Control.Feedback type="invalid">
+                      {errors.workflow_name.message}
                     </Form.Control.Feedback>
                   )}
                 </>
@@ -77,4 +98,4 @@ const AddAssignedModal = ({ isOpen, setIsOpen, onSubmit }) => {
   );
 };
 
-export default AddAssignedModal;
+export default AddWorkflowDetailsModal;

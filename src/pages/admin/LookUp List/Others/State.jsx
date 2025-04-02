@@ -10,18 +10,24 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import "../Order/scroller.css";
 import Swal from 'sweetalert2';
+import { useAuth } from '../../../../Context/AuthContext';
 
 const State = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editState, setEditState] = useState(null);
   const [states, setStates] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+  const { token } = useAuth();
 
   // Fetch all states
   const fetchAllStates = async () => {
     try {
 
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/states`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/states`,{
+        headers : {
+          'Authorization': `Bearer ${token}`, 
+        }
+      });
 
       if (response.data.success && Array.isArray(response.data.data)) {
         setStates(response.data.data);
@@ -65,7 +71,11 @@ const State = () => {
   
     if (confirmDelete.isConfirmed) {
       try {
-        await axios.delete(`${import.meta.env.VITE_API_URL}/states/${stateId}`);
+        await axios.delete(`${import.meta.env.VITE_API_URL}/states/${stateId}`,{
+          headers : {
+            'Authorization': `Bearer ${token}`, 
+          }
+        });
         
         setStates(states.filter((state) => state.id !== stateId));
         toast.success("State deleted successfully!" , {autoClose: 1500});

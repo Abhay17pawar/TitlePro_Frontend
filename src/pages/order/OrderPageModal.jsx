@@ -30,7 +30,11 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
   useEffect(() => {
     const fetchDataSource = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/datasource`);
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/datasource`,{
+          headers : {
+            'Authorization': `Bearer ${token}`, 
+          }
+        });
         const { data } = response;
 
         console.log("Data Source Response: ", data);
@@ -57,7 +61,9 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
     const fetchStates = async () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_API_URL}/states`, {
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          headers: { "Content-Type": "application/x-www-form-urlencoded" ,
+              'Authorization': `Bearer ${token}`, 
+          },
         });
 
         if (response.data?.success) {
@@ -82,7 +88,9 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_API_URL}/products`, {
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json" ,
+              'Authorization': `Bearer ${token}`, 
+          },
         });
 
         if (response.data?.data && Array.isArray(response.data.data)) {
@@ -109,7 +117,9 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
       try {
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/transactions/${option.value}`,
-          { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+          { headers: { "Content-Type": "application/x-www-form-urlencoded",
+              'Authorization': `Bearer ${token}`, 
+           } }
         );
 
         if (response.data?.data && Array.isArray(response.data.data)) {
@@ -138,7 +148,9 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
       try {
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/counties/states/${option.value}`,
-          { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+          { headers: { "Content-Type": "application/x-www-form-urlencoded",
+              'Authorization': `Bearer ${token}`, 
+           } }
         );
 
         if (response.data?.data && Array.isArray(response.data.data)) {

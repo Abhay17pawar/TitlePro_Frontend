@@ -3,10 +3,12 @@ import { Modal, Form, Button } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { useAuth } from "../../../../Context/AuthContext";
 
 const EditDataSourceModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
   const { control, handleSubmit, reset, formState: { errors } } = useForm();
-
+  const { token } = useAuth();
+  
   useEffect(() => {
     if (isOpen && editState) {
       reset({
@@ -23,7 +25,8 @@ const EditDataSourceModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
 
       const response = await axios.patch(`${import.meta.env.VITE_API_URL}/datasource/${editState.id}`, requestData, {
         headers: {
-            "Content-Type": "application/x-www-form-urlencoded" // Set content type for form data
+            "Content-Type": "application/x-www-form-urlencoded" ,
+            'Authorization': `Bearer ${token}`, 
         },
       });
 

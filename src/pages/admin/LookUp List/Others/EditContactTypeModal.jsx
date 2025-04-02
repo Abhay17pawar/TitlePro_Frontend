@@ -3,10 +3,11 @@ import { Modal, Form, Button } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { useAuth } from "../../../../Context/AuthContext";
 
 const EditContactType = ({ isOpen, setIsOpen, onSubmit, editState, token }) => {
   const { control, handleSubmit, reset, formState: { errors } } = useForm();
-
+  
   useEffect(() => {
     if (isOpen && editState) {
       reset({

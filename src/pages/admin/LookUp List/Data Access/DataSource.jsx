@@ -9,16 +9,22 @@ import axios from 'axios'; // Import axios for API calls
 import EditDataSourceModal from './EditDataSourceModal';
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
+import { useAuth } from '../../../../Context/AuthContext';
 
 const DataSource = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [datasource, setDataSource] = useState([]); // Store fetched data here
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editState, setEditState] = useState(null);
+  const { token } = useAuth();
 
   const fetchAllDataSource = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/datasource`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/datasource` , {
+        headers : {
+          'Authorization': `Bearer ${token}`, // Add the Authorization header with the token
+        }
+      });
       const { data } = response;
       console.log("data", data);
       if (data.success) {
@@ -62,7 +68,12 @@ const DataSource = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`${import.meta.env.VITE_API_URL}/datasource/${datasourceId}`);
+          await axios.delete(`${import.meta.env.VITE_API_URL}/datasource/${datasourceId}`, {
+            headers : {
+              'Authorization': `Bearer ${token}`, 
+
+            }
+          });
           setDataSource(datasource.filter((datasource) => datasource.id !== datasourceId));
           toast.success("Data Source deleted successfully!", { autoClose: 1500 });
         } catch (error) {

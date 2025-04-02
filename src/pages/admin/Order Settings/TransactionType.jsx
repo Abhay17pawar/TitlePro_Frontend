@@ -21,11 +21,16 @@ export default function TransactionType() {
   const [editContact, setEditContact] = useState(null); // State for the contact to be edited
   const contactsPerPage = 8;
   const navigate = useNavigate();
+  const { token } = useAuth();
 
   const fetchAllContacts = async () => {
     try {
 
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/transactions`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/transactions`,{
+        headers : {
+          'Authorization': `Bearer ${token}`, 
+        }
+      });
 
       const { data } = response;
 
@@ -89,7 +94,11 @@ export default function TransactionType() {
   
     if (confirmDelete.isConfirmed) {
       try {
-        const response = await axios.delete(`${import.meta.env.VITE_API_URL}/transactions/${transactionId}`);
+        const response = await axios.delete(`${import.meta.env.VITE_API_URL}/transactions/${transactionId}`, {
+          headers : {
+            'Authorization': `Bearer ${token}`, 
+          }
+        });
         
         if (response.data.success) {
           setContactTypes(contactTypes.filter(transaction => transaction.id !== transactionId));

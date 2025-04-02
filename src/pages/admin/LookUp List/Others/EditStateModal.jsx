@@ -3,10 +3,12 @@ import { Modal, Form, Button } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { useAuth } from "../../../../Context/AuthContext";
 
 const EditStateModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
   const { control, handleSubmit, reset, formState: { errors } } = useForm();
-
+  const { token } = useAuth();
+  
   useEffect(() => {
     if (isOpen && editState) {
       reset({
@@ -20,12 +22,6 @@ const EditStateModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
       const requestData = {
         state_name: data.state_name, // Only update state name
       };
-
-      const token = localStorage.getItem("token");
-      if (!token) {
-        toast.error("No token found, please log in.");
-        return;
-      }
 
       const response = await axios.patch(`${import.meta.env.VITE_API_URL}/states/${editState.id}`, requestData, {
         headers: {

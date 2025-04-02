@@ -2,16 +2,19 @@ import { Modal, Form, Button } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import axios from "axios"; // Import axios
+import { useAuth } from "../../../../Context/AuthContext";
 
 const AddDataSourceModal = ({ isOpen, setIsOpen, onSubmit }) => {
     const { control, handleSubmit, reset, formState: { errors } } = useForm();
+    const { token } = useAuth();
 
     const handleFormSubmit = async (data) => {
 
         try {
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/datasource`, data, {
                 headers: {
-                    "Content-Type": "application/x-www-form-urlencoded" // Set content type for form data
+                    "Content-Type": "application/x-www-form-urlencoded" ,
+                    'Authorization': `Bearer ${token}`, 
                 },
             });
 

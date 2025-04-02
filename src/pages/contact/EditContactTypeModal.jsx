@@ -56,7 +56,9 @@ const EditContactModal = ({ isOpen, setIsOpen, onSubmit, editContact }) => {
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/states`,
           {
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            headers: { "Content-Type": "application/x-www-form-urlencoded" ,
+              'Authorization': `Bearer ${token}`, 
+            }
           }
         );
 
@@ -70,7 +72,7 @@ const EditContactModal = ({ isOpen, setIsOpen, onSubmit, editContact }) => {
           toast.error("Failed to fetch states.");
         }
       } catch (error) {
-        toast.error("Error fetching states.");
+        toast.error("Error fetching states." , {autoClose : 1500});
       }
     };
 
@@ -86,7 +88,10 @@ const EditContactModal = ({ isOpen, setIsOpen, onSubmit, editContact }) => {
       try {
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/counties/states/${option.value}`,
-          { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+          { headers: { "Content-Type": "application/x-www-form-urlencoded"  ,
+            'Authorization': `Bearer ${token}`, 
+          }
+          }
         );
 
         if (response.data?.data && Array.isArray(response.data.data)) {
