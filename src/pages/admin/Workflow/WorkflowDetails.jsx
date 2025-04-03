@@ -8,10 +8,15 @@ import "./WorkFlowDetails.css";
 import { Plus } from "lucide-react";
 import { useAuth } from "../../../Context/AuthContext";
 import WorkflowTable from "./WorkflowTable";
+import AddWorkflowDetailsModal from "./WorkflowDetailsAddModal";
+import WorkflowTableAddModal from "./WorkflowTableAddModal";
 
 export default function WorkflowDetails() {
   const { id } = useParams(); // Get ID from URL
   const [workflow, setWorkflow] = useState(null);
+  const [contactTypes, setContactTypes] = useState([]);
+  const [contacts, setContacts] = useState([]);
+  const [isAddOpen, setIsAddOpen] = useState(false);
   const { token } = useAuth();
 
   useEffect(() => {
@@ -32,6 +37,22 @@ export default function WorkflowDetails() {
     if (id) fetchWorkflow();
   }, [id]);
 
+    const handleAddContactType = async (newContact) => {
+      try {
+        // Optimistically update the UI with the new contact
+        setContactTypes((prevContactTypes) => [...prevContactTypes, newContact]);
+        setContacts((prevContacts) => [...prevContacts, newContact]);
+    
+        // After adding, refetch all transactions to ensure correct IDs
+        await fetchAllContacts();
+    
+        setIsAddOpen(false); // Close modal after submission
+      } catch (error) {
+        console.error("Error adding transaction:", error);
+        toast.error("Error adding Transaction Type.");
+      }
+    };
+    
   return (
     <div className="workflow-container">
       <nav aria-label="breadcrumb" className="breadcrumb-nav py-2 px-3">
@@ -52,7 +73,7 @@ export default function WorkflowDetails() {
 
       <div className="d-flex justify-content-between align-items-center px-3">
   <h5 className="text-muted">{workflow && workflow.work_name}</h5>
-  <button 
+  <button onClick={() => setIsAddOpen(true)} // Open Add Modal
   style={{background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)',
   }}
   className="btn text-white"> <Plus size={18} className="me-1" />Add</button>
@@ -60,6 +81,8 @@ export default function WorkflowDetails() {
   <div className="px-3">
    <WorkflowTable/>
   </div>
+  {isAddOpen && <AddWorkflowDetailsModal isOpen={isAddOpen} setIsOpen={setIsAddOpen} onSubmit={handleAddContactType} />}
+
     </div>
   );
 }

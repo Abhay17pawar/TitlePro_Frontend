@@ -6,6 +6,7 @@ import { MdPostAdd } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
 
 const WorkflowTable = () => {
+    
   const tableData = [
     {
       title: "Order Processing",
@@ -26,7 +27,7 @@ const WorkflowTable = () => {
               <div className="d-flex justify-content-between align-items-center mb-0 bg-light p-2 rounded">
                 <h6 className="ml-2 fw-bold">{table.title}</h6>
                 <div className="d-flex gap-2">
-                <button 
+                <button onClick={() => setIsAddOpen(true)} // Open Add Modal
                 style={{background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)',
                 }}
                 className="btn text-white"> <Plus size={18} className="me-1" />Add</button>
