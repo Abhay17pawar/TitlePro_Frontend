@@ -1,7 +1,7 @@
 import { Modal, Form, Button } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import axios from "axios"; // Import axios
+import axios from "axios";
 import { useAuth } from "../../../../Context/AuthContext";
 
 const AddDataSourceModal = ({ isOpen, setIsOpen, onSubmit }) => {
@@ -19,7 +19,6 @@ const AddDataSourceModal = ({ isOpen, setIsOpen, onSubmit }) => {
             });
 
             const result = response.data;
-            console.log(result);
             
             if (result.success) {
                 toast.success("Data Source added successfully!", { autoClose: 1500 });

@@ -15,12 +15,6 @@ const ContactTypeTable = () => {
   const fetchAllContacts = async () => {
     try {
       
-      if (!token) {
-        console.error("No token found, please log in.");
-        toast.error("No token found, please log in.", { autoClose: 1500 });
-        return false;
-      }
-
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/contact-types`, {
         headers: {
           'Authorization': `Bearer ${token}`, // Add the Authorization header with the token

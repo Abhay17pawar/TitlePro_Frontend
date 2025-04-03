@@ -107,17 +107,17 @@ const County = () => {
             <h6 className="mb-0 text-info">County</h6>
             <div>
                  <button 
-                              onClick={() => setIsOpen(true)} // Open modal on click
-                              style={{
-                              display: 'flex',           
-                              alignItems: 'center',      
-                              justifyContent: 'center',  
-                              background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)'
-                            }}
-                            className="btn btn-sm"
-                          >
-                            <FaPlus color="white" size={16} />                           
-                             </button>
+                  onClick={() => setIsOpen(true)} // Open modal on click
+                  style={{
+                  display: 'flex',           
+                  alignItems: 'center',      
+                  justifyContent: 'center',  
+                  background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)'
+                }}
+                className="btn btn-sm"
+              >
+                <FaPlus color="white" size={16} />                           
+                  </button>
             </div>
           </div>
                 <div className="card-body p-0 custom-scrollbar overflow-auto" style={{ height: '200px', maxHeight: '200px' }}>

@@ -30,7 +30,7 @@ const EditStateModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
       });
 
       if (response.data.success) {
-        toast.success("State updated successfully!");
+        toast.success("State updated successfully!" , {autoClose : 1500});
         onSubmit({ ...editState, ...requestData });
         setIsOpen(false);
       } else {

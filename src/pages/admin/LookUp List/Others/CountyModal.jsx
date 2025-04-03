@@ -45,21 +45,11 @@ const AddCountyModal = ({ isOpen, setIsOpen, onSubmit }) => {
         return;
       }
 
-      console.log("Selected State:", selectedState); // Debugging log
-
       const requestData = {
         state_name: selectedState.label,  // Sending selected state name
         county_name: data.county_name, // Sending county name
         stateId: selectedState.value,  // Sending selected state ID
       };
-
-      console.log("Request Data:", requestData); // Log the request before sending
-
-      if (!token) {
-        console.error("No token found, please log in.");
-        toast.error("No token found, please log in.", { autoClose: 1500 });
-        return;
-      }
 
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/counties`, requestData, {
         headers: {

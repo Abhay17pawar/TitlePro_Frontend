@@ -11,11 +11,6 @@ const AddContactTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
   const handleFormSubmit = async (data) => {
     try {
       
-      if (!token) {
-        console.error("No token found, please log in.");
-        toast.error("No token found, please log in.", { autoClose: 1500 });
-        return false;
-      }
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/contact-types`, data, {
         headers: {
           "Content-Type": "application/json",

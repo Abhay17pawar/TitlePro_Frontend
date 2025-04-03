@@ -25,7 +25,7 @@ const EditWorkflow = ({ isOpen, setIsOpen, onSubmit, editState }) => {
   
       const response = await axios.patch(`${import.meta.env.VITE_API_URL}/workflows/${editState.id}`, requestData , {
         headers : {
-          'Authorization': `Bearer ${token}`, 
+        'Authorization': `Bearer ${token}`, 
         }
       });
   
@@ -50,7 +50,6 @@ const EditWorkflow = ({ isOpen, setIsOpen, onSubmit, editState }) => {
       <Modal.Body>
         <Form onSubmit={handleSubmit(handleFormSubmit)}>
 
-          {/* State Name Input */}
           <Form.Group controlId="formStateName" className="mb-3">
             <Form.Label className="text-muted mb-0">Workflow Group</Form.Label>
             <Controller
@@ -75,7 +74,6 @@ const EditWorkflow = ({ isOpen, setIsOpen, onSubmit, editState }) => {
             />
           </Form.Group>
 
-          {/* Submit Button */}
           <Button
             style={{ border: "none", background: "linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)" }}
             className="w-100"

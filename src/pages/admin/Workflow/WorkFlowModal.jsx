@@ -25,7 +25,7 @@ const WorkflowModal = ({ isOpen, setIsOpen, onSubmit }) => {
         setIsOpen(false); // Close modal after success
         reset(); // Reset form fields
       } else {
-        toast.error(result.message || "Failed to add Workflow Group.");
+        toast.error(result.message || "Failed to add Workflow Group." , {autoClose : 1500});
       }
     } catch (error) {
       const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while adding Workflow Group.";

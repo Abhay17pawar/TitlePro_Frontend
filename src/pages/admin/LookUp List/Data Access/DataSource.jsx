@@ -71,7 +71,6 @@ const DataSource = () => {
           await axios.delete(`${import.meta.env.VITE_API_URL}/datasource/${datasourceId}`, {
             headers : {
               'Authorization': `Bearer ${token}`, 
-
             }
           });
           setDataSource(datasource.filter((datasource) => datasource.id !== datasourceId));
@@ -93,17 +92,17 @@ const DataSource = () => {
             <h6 className="mb-0 text-info">Data Source</h6>
             <div>
              <button 
-                           style={{
-                           display: 'flex',           
-                           alignItems: 'center',      
-                           justifyContent: 'center',  
-                           background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)'
-                         }}
-                         className="btn btn-sm"
-                         onClick={() => setIsOpen(true)}
-                       >
-                         <FaPlus color="white" size={16} />                           
-                           </button>
+                style={{
+                display: 'flex',           
+                alignItems: 'center',      
+                justifyContent: 'center',  
+                background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)'
+              }}
+              className="btn btn-sm"
+              onClick={() => setIsOpen(true)}
+            >
+              <FaPlus color="white" size={16} />                           
+                </button>
             </div>
           </div>
           <div className="card-body p-0 custom-scrollbar overflow-auto" style={{ height: '200px', maxHeight: '200px' }}>

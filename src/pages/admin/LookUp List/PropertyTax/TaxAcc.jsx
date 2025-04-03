@@ -16,7 +16,6 @@ const TaxAcc = () => {
 
   return (
     <>
-        {/* User Group Type */}
                     <div className="col-md-3">
                       <div className="card mb-4">
                         <div className="card-header bg-light d-flex justify-content-between align-items-center py-2">

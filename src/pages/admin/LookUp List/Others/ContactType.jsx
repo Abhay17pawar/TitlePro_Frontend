@@ -21,11 +21,6 @@ const ContactType = () => {
   // Fetch all contact types from the API
   const fetchAllContacts = async () => {
     try {
-      if (!token) {
-        toast.error("No token found! redirecting to login", { autoClose: 1500 });
-        return;
-      }
-
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/contact-types`, {
         headers: {
           'Authorization': `Bearer ${token}` // Add the Authorization header with the token

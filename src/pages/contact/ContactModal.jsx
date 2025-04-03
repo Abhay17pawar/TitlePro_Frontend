@@ -12,7 +12,7 @@ const AddContactModal = ({ isOpen, setIsOpen, onSubmit }) => {
   const [stateOptions, setStateOptions] = useState([]);
   const [countyOptions, setCountyOptions] = useState([]); // Store counties
   const { token } = useAuth();
-  
+
   // Fetch contact types from API
   useEffect(() => {
     const fetchContactTypes = async () => {
@@ -29,7 +29,7 @@ const AddContactModal = ({ isOpen, setIsOpen, onSubmit }) => {
           setContactTypes([]);
         }
       } catch (error) {
-        toast.error("Failed to fetch contact types.");
+        toast.error("Failed to fetch contact types.", {autoClose : 1500});
         setContactTypes([]);
       }
     };
@@ -57,10 +57,10 @@ const AddContactModal = ({ isOpen, setIsOpen, onSubmit }) => {
           }));
           setStateOptions(options);
         } else {
-          toast.error("Failed to fetch states.");
+          toast.error("Failed to fetch states.", {autoClose: 1500});
         }
       } catch (error) {
-        toast.error("Error fetching states.");
+        toast.error("Error fetching states.", {autoClose : 1500});
       }
     };
 
@@ -103,11 +103,6 @@ const AddContactModal = ({ isOpen, setIsOpen, onSubmit }) => {
     try {
       const userId = JSON.parse(localStorage.getItem("user"));
       
-      if (!token) {
-        toast.error("No token found, please log in.");
-        return;
-      }
-  
       if (!userId) {
         toast.error("No user ID found.");
         return;
@@ -193,7 +188,7 @@ const AddContactModal = ({ isOpen, setIsOpen, onSubmit }) => {
                           label: type.slug,
                         }))}
                         placeholder="Select Type"
-                        getOptionLabel={(e) => e.label}
+                        getOptionLabel={(e) => e.value}
                       />
                     )}
                   />

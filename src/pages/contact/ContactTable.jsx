@@ -31,15 +31,11 @@ const ContactTable = () => {
       navigate("/deleted-contact");
     }
   }, [activeTab, navigate]);
+  
 
   // Fetch all contacts
   const fetchAllContacts = async () => {
     try {
-      if (!token) {
-        toast.error("No token found! redirecting to login", { autoClose: 1500 });
-        navigate("/");
-        return;
-      }
 
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/contacts`, {
         headers: {
@@ -48,7 +44,6 @@ const ContactTable = () => {
       });
 
       const { data } = response;
-      console.log(data);
       if (data.success && Array.isArray(data.data)) {
         setContacts(data.data);
       } else {
@@ -106,7 +101,6 @@ const ContactTable = () => {
         const response = await axios.delete(`${import.meta.env.VITE_API_URL}/contacts/${transactionId}` , {
           headers : {
             Authorization: `Bearer ${token}`,
-
           }
         });
         
@@ -117,8 +111,7 @@ const ContactTable = () => {
           toast.error("Failed to delete Contact", { autoClose: 1500 });
         }
       } catch (error) {
-        console.error("Error deleting Contact:", error);
-        toast.error(error.response?.data?.message, { autoClose: 1500 });
+        toast.error(error.response?.data?.message || "an error occurred while deleting Contact!", { autoClose: 1500 });
       }
     } else if (confirmDelete.dismiss === Swal.DismissReason.cancel) {
       Swal.fire("Cancelled", "Your Contact is safe!", "info");

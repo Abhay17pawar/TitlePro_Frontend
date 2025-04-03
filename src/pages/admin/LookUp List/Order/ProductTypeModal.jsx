@@ -14,7 +14,7 @@ const AddProductTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/products`, data, {
         headers: {
           "Content-Type": "application/json",
-            'Authorization': `Bearer ${token}`, 
+          'Authorization': `Bearer ${token}`, 
         },
       });
 

@@ -22,11 +22,6 @@ const EditTransactionTypeModal = ({ isOpen, setIsOpen, onSubmit, editContact }) 
         transaction_name: data.transaction_type, // Only update transaction type
       };
 
-      if (!token) {
-        toast.error("No token found, please log in.", { autoClose: 1500 });
-        return;
-      }
-
       const response = await axios.patch(`${import.meta.env.VITE_API_URL}/transactions/${editContact.id}`, requestData, {
         headers: {
           Authorization: `Bearer ${token}`,

@@ -29,7 +29,7 @@ const AddWorkflowDetailsModal = ({ isOpen, setIsOpen, onSubmit }) => {
         toast.error(result.error?.errorMessage || 'Failed to add Workflow Details.', { autoClose: 1500 });
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.error?.errorMessage;
+      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while adding Workflow Details!";
       toast.error(errorMessage, { autoClose: 1500 });
     }
   };  

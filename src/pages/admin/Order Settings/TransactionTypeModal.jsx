@@ -45,21 +45,16 @@ const TransactionTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
         return;
       }
 
-      console.log("Selected Product:", selectedProduct); // ✅ Debugging log
-
       const requestData = {
-        product_name: selectedProduct.label,  // ✅ Sending product name
-        transaction_name: data.transaction_type, // ✅ Sending transaction type
-        productId: selectedProduct.value,  // ✅ Sending product ID
+        product_name: selectedProduct.label,  
+        transaction_name: data.transaction_type, 
+        productId: selectedProduct.value,  
       };
-
-      console.log("Request Data:", requestData); // ✅ Log the request before sending
-
 
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/transactions`, requestData, {
         headers: {
           "Content-Type": "application/json",
-            'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`
         },
       });
 
@@ -69,7 +64,7 @@ const TransactionTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
         onSubmit(requestData);
         setIsOpen(false);
         reset();
-        setSelectedProduct(null); // ✅ Reset selected product
+        setSelectedProduct(null); 
       } else {
         toast.error("Failed to add transaction type.", { autoClose: 1500 });
       }
@@ -86,21 +81,18 @@ const TransactionTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit(handleFormSubmit)}>
-          {/* Product Type Select */}
           <Form.Group controlId="formProductType" className="mb-3">
             <Form.Label className="text-muted mb-0">Product Type</Form.Label>
             <Select
               options={productOptions}
               value={selectedProduct}
               onChange={(selected) => {
-                console.log("Selected Option:", selected); // ✅ Debugging log
                 setSelectedProduct(selected);
               }}
               placeholder="Select a product"
             />
           </Form.Group>
 
-          {/* Transaction Type Input */}
           <Form.Group controlId="formTransactionType" className="mb-3">
             <Form.Label className="text-muted mb-0">Transaction Type</Form.Label>
             <Controller
@@ -125,7 +117,6 @@ const TransactionTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
             />
           </Form.Group>
 
-          {/* Submit Button */}
           <Button
             style={{ border: "none", background: "linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)" }}
             className="w-100"

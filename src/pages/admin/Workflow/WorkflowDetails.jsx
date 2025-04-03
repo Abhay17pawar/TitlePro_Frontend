@@ -28,7 +28,6 @@ export default function WorkflowDetails() {
           }
         });
         setWorkflow(response.data.data);
-        console.log(response?.data?.data?.work_name)
       } catch (error) {
         console.error("Error fetching workflow:", error);
       }
@@ -39,17 +38,14 @@ export default function WorkflowDetails() {
 
     const handleAddContactType = async (newContact) => {
       try {
-        // Optimistically update the UI with the new contact
         setContactTypes((prevContactTypes) => [...prevContactTypes, newContact]);
         setContacts((prevContacts) => [...prevContacts, newContact]);
     
-        // After adding, refetch all transactions to ensure correct IDs
         await fetchAllContacts();
     
         setIsAddOpen(false); // Close modal after submission
       } catch (error) {
-        console.error("Error adding transaction:", error);
-        toast.error("Error adding Transaction Type.");
+        toast.error("Error adding Transaction Type." , { autoClose : 1500});
       }
     };
     

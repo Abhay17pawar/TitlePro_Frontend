@@ -19,12 +19,6 @@ const OrdersTable = () => {
   // Fetch orders from the API
   const fetchOrders = async () => {
     try {
-      
-      if (!token) {
-        navigate('/');
-      toast.error("No token found! redirecting to login", { autoClose: 1500 });
-        return false;
-      }
 
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/orders`, {
         headers: {

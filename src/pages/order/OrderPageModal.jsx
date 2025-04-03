@@ -37,8 +37,6 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
         });
         const { data } = response;
 
-        console.log("Data Source Response: ", data);
-
         if (data.success && Array.isArray(data.data)) {
           const options = data.data.map((item) => ({
             value: item.id, // Assuming 'id' is the unique identifier for the data source
@@ -49,7 +47,7 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
           toast.error("Failed to fetch data sources.");
         }
       } catch (error) {
-        toast.error("Error fetching data sources.");
+        toast.error("Error fetching data sources!", {autoClose : 1500});
       }
     };
 
@@ -76,7 +74,7 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
           toast.error("Failed to fetch states.");
         }
       } catch (error) {
-        toast.error("Error fetching states.");
+        toast.error("Error fetching states!" , {autoClose : 1500});
       }
     };
 
@@ -103,7 +101,7 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
           toast.error("Invalid product data received.");
         }
       } catch (error) {
-        toast.error("Failed to load product types.");
+        toast.error("Failed to load product types!" , {autoClose : 1500});
       }
     };
 
@@ -165,7 +163,7 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
         }
       } catch (error) {
         setCountyOptions([]);
-        toast.error("Failed to load counties.");
+        toast.error("Failed to load counties." , {autoClose : 1500});
       }
     } else {
       setCountyOptions([]);

@@ -45,7 +45,6 @@ export default function WorkflowGroup() {
         setContacts([]);
       }
     } catch (error) {
-      console.error("Error fetching Workflow Group:", error);
       setContactTypes([]);
       setContacts([]);
     }
