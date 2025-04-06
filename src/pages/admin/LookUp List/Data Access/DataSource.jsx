@@ -20,17 +20,16 @@ const DataSource = () => {
 
   const fetchAllDataSource = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/datasource` , {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/data-source` , {
         headers : {
-          'Authorization': `Bearer ${token}`, // Add the Authorization header with the token
+          'Authorization': `Bearer ${token}`, 
         }
       });
-      const { data } = response;
-      console.log("data", data);
-      if (data.success) {
-        setDataSource(data.data); 
+      
+      if (response && response.data && response.data.status === 200) {
+        setDataSource(response.data.data); 
       } else {
-        setDataSource([]);
+        setDataSource([]); 
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -108,10 +107,10 @@ const DataSource = () => {
           <div className="card-body p-0 custom-scrollbar overflow-auto" style={{ height: '200px', maxHeight: '200px' }}>
             <ul className="list-group list-group-flush">
               {datasource.map((item, index) => ( // Use 'datasource' here instead of 'BSource'
-                <li key={index} className="list-group-item d-flex align-items-center text-muted">
+                <li key={item?.id || index} className="list-group-item d-flex align-items-center text-muted">
                   <div className="d-flex align-items-center">
                     <Smile className="text-info me-2" size={16} />
-                    {item.source_name} {/* Use 'sourceName' from the response */}
+                    {item.name} {/* Use 'sourceName' from the response */}
                   </div>
                   <div className="d-flex align-items-center ms-auto">
                     <div

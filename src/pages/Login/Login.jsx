@@ -5,12 +5,13 @@ import backgroundImage from "../../assets/background.png";
 import { useNavigate } from "react-router-dom";
 import validator from "validator";
 import axios from "axios";
-import { useAuth } from "../../Context/AuthContext"; // Import useAuth
+import { useAuth } from "../../Context/AuthContext"; 
+import { toast } from "react-toastify";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth(); // Use login function from AuthContext
-  const [emailOrPhone, setEmailOrPhone] = useState("");
+  const { login } = useAuth(); 
+  const [emailOrusername, setemailOrusername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({ email: "", password: "" });
@@ -20,51 +21,52 @@ const Login = () => {
   
   useEffect(() => {
     if (token) {
-      navigate("/dashboard"); // Redirect if already logged in
+      navigate("/dashboard"); 
     }
-  }, [navigate]);
+  }, [navigate, token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
   
     const newErrors = {
-      email: validator.isEmail(emailOrPhone) ? "" : "Invalid email format",
-      password: validator.isLength(password, { min: 6 })
-        ? ""
-        : "Password must be at least 6 characters",
+      email: "",
+      password: validator.isLength(password, { min: 6 }) ? "" : "Password must be at least 6 characters",
     };
+  
+    if (validator.isEmail(emailOrusername)) {
+      newErrors.email = validator.isEmail(emailOrusername) ? "" : "Invalid email format";
+    } else {
+      newErrors.email = ""; 
+    }
   
     setErrors(newErrors);
   
-    if (newErrors.email || newErrors.password) {
-      return; // Don't proceed if there are validation errors
+    if (newErrors.password) {
+      return; 
     }
   
     setLoading(true);
-    setApiError(""); // Clear any previous errors
+    setApiError(""); 
   
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/Login`,
+        `${import.meta.env.VITE_API_URL}/login`,
         {
-          emailOrPhone,
+          emailOrusername,
           password,
         }
       );
   
-      console.log("Full API Response:", response);
-      console.log("API Response Data:", response.data);
+      const { token, data, message } = response.data;
+
+      toast.success(message || "Login success", { autoClose: 1500 });
   
-      const { token, user } = response.data;
-  
-      // Use AuthContext login function
       login(token);
 
-      // Store user details separately if needed
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("user", JSON.stringify(data));
   
     } catch (error) {
-      console.error("Login failed", error.response?.data?.message || error.message);
+      toast.error(error.response?.data?.message || "Something went wrong!", { autoClose: 1500 });
       setApiError(error.response?.data?.message || "Something went wrong!");
     } finally {
       setLoading(false);
@@ -111,10 +113,10 @@ const Login = () => {
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
               <Form.Control
-                type="email"
-                placeholder="Enter email"
-                value={emailOrPhone}
-                onChange={(e) => setEmailOrPhone(e.target.value)}
+                type="text"
+                placeholder="Enter email or username"
+                value={emailOrusername}
+                onChange={(e) => setemailOrusername(e.target.value)}
               />
               {errors.email && (
                 <div className="text-danger small">{errors.email}</div>

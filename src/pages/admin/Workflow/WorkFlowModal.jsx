@@ -21,7 +21,7 @@ const WorkflowModal = ({ isOpen, setIsOpen, onSubmit }) => {
 
       if (result.success) {
         toast.success("Workflow Group added successfully!", { autoClose: 1500 });
-        onSubmit(result.data); // Pass the new product type to parent
+        onSubmit(result.data); 
         setIsOpen(false); // Close modal after success
         reset(); // Reset form fields
       } else {
@@ -43,7 +43,7 @@ const WorkflowModal = ({ isOpen, setIsOpen, onSubmit }) => {
         <Form.Group controlId="formProductType" className="mb-3">
         <Form.Label className="text-muted">Workflow Group</Form.Label>
         <Controller
-          name="work_name" // Make sure this matches your Sequelize model attribute
+          name="work_name" 
           control={control}
           rules={{ required: "Workflow Group is required" }}
           render={({ field }) => (

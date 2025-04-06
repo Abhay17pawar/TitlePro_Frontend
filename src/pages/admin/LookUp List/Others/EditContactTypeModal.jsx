@@ -3,10 +3,22 @@ import { Modal, Form, Button } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { useAuth } from "../../../../Context/AuthContext";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+// Validation schema using Yup
+const validationSchema = yup.object({
+  contact_type: yup
+    .string()
+    .trim()
+    .required("Contact Type is required")
+    .matches(/^[^\d]*$/, "Contact Type must not contain any digits")
+});
 
 const EditContactType = ({ isOpen, setIsOpen, onSubmit, editState, token }) => {
-  const { control, handleSubmit, reset, formState: { errors } } = useForm();
+  const { control, handleSubmit, reset, formState: { errors } } = useForm({
+    resolver : yupResolver(validationSchema)
+  });
   
   useEffect(() => {
     if (isOpen && editState) {

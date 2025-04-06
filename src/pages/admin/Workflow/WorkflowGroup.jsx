@@ -3,30 +3,25 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { FaRegPenToSquare } from "react-icons/fa6";
 import Swal from "sweetalert2";
 import WorkflowModal from "./WorkFlowModal";
 import EditWorkflow from "./EditWorkflow";
-import WorkflowDetails from "./WorkflowDetails";
 import { useAuth } from "../../../Context/AuthContext";
 
 export default function WorkflowGroup() {
-  const [contactTypes, setContactTypes] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [workflowTypes, setworkflowTypes] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [contacts, setContacts] = useState([]);
+  const [workflow, setworkflow] = useState([]);
   const [isAddOpen, setIsAddOpen] = useState(false); // Separate modal state for adding
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [states, setStates] = useState([]); // Correct state to manage fetched 
-  const [editState, setEditState] = useState(null);
-  const contactsPerPage = 8;
-  const navigate = useNavigate();
-  const [selectedContact, setSelectedContact] = useState(null); // Track selected contact for details
+  const [editworkflow, seteditworkflow] = useState(null);
+  const workflowPerPage = 8;
   const { token } = useAuth();
 
-  const fetchAllContacts = async () => {
+  const fetchAllworkflow = async () => {
     try {
 
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/workflows`, {
@@ -38,30 +33,30 @@ export default function WorkflowGroup() {
       const { data } = response;
 
       if (data.success && Array.isArray(data.data)) {
-        setContactTypes(data.data);
-        setContacts(data.data); // Ensure contacts state is updated for pagination
+        setworkflowTypes(data.data);
+        setworkflow(data.data); // Ensure workflow state is updated for pagination
       } else {
-        setContactTypes([]);
-        setContacts([]);
+        setworkflowTypes([]);
+        setworkflow([]);
       }
     } catch (error) {
-      setContactTypes([]);
-      setContacts([]);
+      setworkflowTypes([]);
+      setworkflow([]);
     }
   };
 
   useEffect(() => {
-    fetchAllContacts();
+    fetchAllworkflow();
   }, []);
 
-  const handleAddContactType = async (newContact) => {
+  const handleAddworkflowType = async (newworkflow) => {
     try {
-      // Optimistically update the UI with the new contact
-      setContactTypes((prevContactTypes) => [...prevContactTypes, newContact]);
-      setContacts((prevContacts) => [...prevContacts, newContact]);
+      // Optimistically update the UI with the new workflow
+      setworkflowTypes((prevworkflowTypes) => [...prevworkflowTypes, newworkflow]);
+      setworkflow((prevworkflow) => [...prevworkflow, newworkflow]);
   
       // After adding, refetch all transactions to ensure correct IDs
-      await fetchAllContacts();
+      await fetchAllworkflow();
   
       setIsAddOpen(false); // Close modal after submission
     } catch (error) {
@@ -70,17 +65,17 @@ export default function WorkflowGroup() {
     }
   };
   
-  const handleEditWorkflow = (updatedContact) => {
-    setContactTypes(contactTypes.map(contact => 
-      contact.id === updatedContact.id ? updatedContact : contact
+  const handleEditWorkflow = (updatedworkflow) => {
+    setworkflowTypes(workflowTypes.map(workflow => 
+      workflow.id === updatedworkflow.id ? updatedworkflow : workflow
     ));
-    setContacts(contacts.map(contact => 
-      contact.id === updatedContact.id ? updatedContact : contact
+    setworkflow(workflow.map(workflow => 
+      workflow.id === updatedworkflow.id ? updatedworkflow : workflow
     ));
     setIsEditOpen(false); // Close modal after editing
   };
 
-  const handleDeleteContact = async (transactionId) => {
+  const handleDeleteWorkflow = async (transactionId) => {
     const confirmDelete = await Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -101,8 +96,8 @@ export default function WorkflowGroup() {
         });
         
         if (response.data.success) {
-          setContactTypes(contactTypes.filter(transaction => transaction.id !== transactionId));
-          setContacts(contacts.filter(transaction => transaction.id !== transactionId));
+          setworkflowTypes(workflowTypes.filter(transaction => transaction.id !== transactionId));
+          setworkflow(workflow.filter(transaction => transaction.id !== transactionId));
           toast.success("Workflow Group deleted successfully.", { autoClose: 1500 });
         } else {
           toast.error("Failed to delete Workflow Group.", { autoClose: 1500 });
@@ -117,10 +112,10 @@ export default function WorkflowGroup() {
   };
 
   // Pagination logic
-  const indexOfLastContact = currentPage * contactsPerPage;
-  const indexOfFirstContact = indexOfLastContact - contactsPerPage;
-  const currentContacts = contacts.slice(indexOfFirstContact, indexOfLastContact);
-  const totalPages = Math.ceil(contacts.length / contactsPerPage);
+  const indexOfLastworkflow = currentPage * workflowPerPage;
+  const indexOfFirstworkflow = indexOfLastworkflow - workflowPerPage;
+  const currentworkflow = workflow.slice(indexOfFirstworkflow, indexOfLastworkflow);
+  const totalPages = Math.ceil(workflow.length / workflowPerPage);
 
   return (
     <div className="container-fluid p-0">
@@ -193,25 +188,26 @@ export default function WorkflowGroup() {
               </tr>
             </thead>
             <tbody>
-              {currentContacts.map((contact, index) => (
-                <tr key={contact.id} className={index % 2 === 0 ? "bg-white" : "bg-light"}>
-                  <td
-                    onClick={() => navigate(`/details/${contact.id}`)}      
-                    style={{ cursor: 'pointer' }}
-                    className="text-muted"
+              {currentworkflow.map((workflow, index) => (
+                <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-light"}>
+                  <td>
+                  <Link 
+                    to={`/details/${workflow.id}`} 
+                    style={{ textDecoration: 'none', color: 'info' }} 
                   >
-                    {contact.work_name}
-                  </td>
+                    {workflow.work_name}
+                  </Link>
+                </td>
                   <td className="text-muted">{JSON.parse(localStorage.getItem("user"))?.name}</td>
-                  <td className="text-muted">{contact.CreatedOn}</td>
-                  <td className="text-muted">{contact.LastModifyOn}</td>
+                  <td className="text-muted">{workflow.CreatedOn}</td>
+                  <td className="text-muted">{workflow.LastModifyOn}</td>
                   <td className="text-muted">
                     <div className="d-flex align-items-center ms-auto">
                       <div
                         className="d-flex justify-content-center align-items-center p-2 bg-primary bg-opacity-10 text-primary me-2 rounded-2"
                         style={{ cursor: 'pointer', width: '1.75rem', height: '1.75rem' }}
                         onClick={() => {
-                            setEditState(contact);
+                            seteditworkflow(workflow);
                             setIsEditOpen(true);
                           }}
                       >
@@ -220,7 +216,7 @@ export default function WorkflowGroup() {
                       <div
                         className="d-flex justify-content-center align-items-center p-2 bg-danger bg-opacity-10 text-danger rounded-2"
                         style={{ cursor: 'pointer', width: '1.75rem', height: '1.75rem' }}
-                        onClick={() => handleDeleteContact(contact.id)}
+                        onClick={() => handleDeleteWorkflow(workflow.id)}
                       >
                         <RiDeleteBin6Line />
                       </div>
@@ -262,8 +258,8 @@ export default function WorkflowGroup() {
         </nav>
       </div>
 
-      {isAddOpen && <WorkflowModal isOpen={isAddOpen} setIsOpen={setIsAddOpen} onSubmit={handleAddContactType} />}
-      {isEditOpen && <EditWorkflow isOpen={isEditOpen} setIsOpen={setIsEditOpen} onSubmit={handleEditWorkflow} editState={editState} />}
+      {isAddOpen && <WorkflowModal isOpen={isAddOpen} setIsOpen={setIsAddOpen} onSubmit={handleAddworkflowType} />}
+      {isEditOpen && <EditWorkflow isOpen={isEditOpen} setIsOpen={setIsEditOpen} onSubmit={handleEditWorkflow} editworkflow={editworkflow} />}
     </div>
   );
 }

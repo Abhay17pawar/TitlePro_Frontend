@@ -4,9 +4,21 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useAuth } from "../../../../Context/AuthContext";
+import * as yup from "yup";  
+import { yupResolver } from "@hookform/resolvers/yup";  
+
+const validationSchema = yup.object({
+  source_name : yup 
+                .string()
+                .trim()
+                .required("Data Source is required")
+                .matches(/^[^\d]*$/, "Data Source must not contain any digits")
+});
 
 const EditDataSourceModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
-  const { control, handleSubmit, reset, formState: { errors } } = useForm();
+  const { control, handleSubmit, reset, formState: { errors } } = useForm({
+    resolver : yupResolver(validationSchema)
+  });
   const { token } = useAuth();
   
   useEffect(() => {

@@ -4,9 +4,20 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useAuth } from "../../../../Context/AuthContext";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup"
 
-const EditAssignedWhen = ({ isOpen, setIsOpen, onSubmit, editState }) => {
-  const { control, handleSubmit, reset, formState: { errors } } = useForm();
+const validationSchema = yup.object({
+  assigned_name : yup
+                 .string()
+                 .trim()
+                 .required("Assigned When is required")
+});
+
+const EditAssignedModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
+  const { control, handleSubmit, reset, formState: { errors } } = useForm({
+    resolver : yupResolver(validationSchema)
+  });
   const { token } = useAuth();
 
   useEffect(() => {
@@ -30,14 +41,14 @@ const EditAssignedWhen = ({ isOpen, setIsOpen, onSubmit, editState }) => {
       });
   
       if (response.data.success) {
-        toast.success("Assigned When updated successfully!", { autoClose: 1500 });
+        toast.success("Assigned item updated successfully!", { autoClose: 1500 });
         onSubmit({ ...editState, ...requestData });
         setIsOpen(false);
       } else {
-        toast.error(response.data.message || "Failed to update Assigned When.", { autoClose: 1500 });
+        toast.error(response.data.message || "Failed to update assigned item.", { autoClose: 1500 });
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while updating the Assigned When.";
+      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while updating the assigned item.";
       toast.error(errorMessage, { autoClose: 1500 });
     }
   };  
@@ -51,7 +62,7 @@ const EditAssignedWhen = ({ isOpen, setIsOpen, onSubmit, editState }) => {
         <Form onSubmit={handleSubmit(handleFormSubmit)}>
 
           {/* State Name Input */}
-          <Form.Group controlId="formStateName" className="mb-3">
+          <Form.Group controlId="formEditAssignedName" className="mb-3">
             <Form.Label className="text-muted mb-0">Assigned When</Form.Label>
             <Controller
               name="assigned_name"
@@ -89,4 +100,4 @@ const EditAssignedWhen = ({ isOpen, setIsOpen, onSubmit, editState }) => {
   );
 };
 
-export default EditAssignedWhen;
+export default EditAssignedModal;

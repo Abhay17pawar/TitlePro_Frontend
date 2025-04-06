@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { ChevronLeft, ChevronRight, Plus, Search, Trash2 } from "lucide-react";
-import AddContactModal from "./ContactModal"; // Import the modal
+import AddContactModal from "./ContactModal"; 
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom"; // Assuming you're using react-router-dom for navigation
+import { useNavigate } from "react-router-dom"; 
 import { useAuth } from "../../Context/AuthContext";
 
 export default function DeletedContactTable() {

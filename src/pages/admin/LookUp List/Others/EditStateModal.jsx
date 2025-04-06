@@ -1,14 +1,28 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Modal, Form, Button } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useAuth } from "../../../../Context/AuthContext";
+import * as yup from "yup";  
+import { yupResolver } from "@hookform/resolvers/yup";  
+
+// Define Yup validation schema
+const validationSchema = yup.object({
+  state_name: yup
+    .string()
+    .trim()
+    .required("State Name is required") 
+    .matches(/^[^\d]*$/, "Contact Type must not contain any digits")
+});
 
 const EditStateModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
-  const { control, handleSubmit, reset, formState: { errors } } = useForm();
+  const { control, handleSubmit, reset, formState: { errors } } = useForm({
+    resolver: yupResolver(validationSchema),  // Pass the validation schema
+  });
   const { token } = useAuth();
-  
+
+  // Prepopulate the form when editing a state
   useEffect(() => {
     if (isOpen && editState) {
       reset({
@@ -30,7 +44,7 @@ const EditStateModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
       });
 
       if (response.data.success) {
-        toast.success("State updated successfully!" , {autoClose : 1500});
+        toast.success("State updated successfully!", { autoClose: 1500 });
         onSubmit({ ...editState, ...requestData });
         setIsOpen(false);
       } else {
@@ -56,7 +70,6 @@ const EditStateModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
             <Controller
               name="state_name"
               control={control}
-              rules={{ required: "State Name is required" }}
               render={({ field }) => (
                 <>
                   <Form.Control
@@ -75,7 +88,6 @@ const EditStateModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
             />
           </Form.Group>
 
-          {/* Submit Button */}
           <Button
             style={{ border: "none", background: "linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)" }}
             className="w-100"

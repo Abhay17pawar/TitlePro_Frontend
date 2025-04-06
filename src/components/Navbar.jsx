@@ -3,16 +3,31 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { FaTachometerAlt, FaClipboardList, FaTasks, FaChartBar, FaCalculator, FaAddressBook, FaUserShield, FaBell, FaCommentDots, FaUserCircle } from "react-icons/fa";
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
+import Swal from 'sweetalert2';
 
 const Navbar = () => {
   const navigate = useNavigate();
 
   const handleSignOut = () => {
-    // Clear user session (if using localStorage or context)
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/"); // Redirect to login page
-    window.location.reload();
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will be logged out and redirected to the login page.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "rgba(14,153,223,1)",
+      confirmButtonText: "Yes, log me out!",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        navigate("/"); 
+        window.location.reload();
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire("Cancelled", "You are still logged in!", "info");
+      }
+    });
   };
 
   return (

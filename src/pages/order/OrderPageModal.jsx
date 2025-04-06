@@ -26,103 +26,116 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
   const [countyOptions, setCountyOptions] = useState([]);
   const [datasource, setDataSource] = useState([]);
 
-  // Fetch Data Source Options
+  // Fetch Data Source Options when modal is opened
   useEffect(() => {
-    const fetchDataSource = async () => {
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/datasource`,{
-          headers : {
-            'Authorization': `Bearer ${token}`, 
+    if (isOpen) {
+      const fetchDataSource = async () => {
+        try {
+          const response = await axios.get(`${import.meta.env.VITE_API_URL}/datasource`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+          const { data } = response;
+          console.log("data source " ,data);
+
+          if (data.success && Array.isArray(data.data)) {
+            const options = data.data.map((item) => ({
+              value: item.id,
+              label: item.source_name,
+            }));
+            setDataSource(options);
+          } else {
+            toast.error("Failed to fetch data sources.");
           }
-        });
-        const { data } = response;
-
-        if (data.success && Array.isArray(data.data)) {
-          const options = data.data.map((item) => ({
-            value: item.id, // Assuming 'id' is the unique identifier for the data source
-            label: item.source_name, // Assuming 'name' is the label for the data source
-          }));
-          setDataSource(options);
-        } else {
-          toast.error("Failed to fetch data sources.");
+        } catch (error) {
+          toast.error("Error fetching data sources!", { autoClose: 1500 });
         }
-      } catch (error) {
-        toast.error("Error fetching data sources!", {autoClose : 1500});
-      }
-    };
+      };
 
-    fetchDataSource();
-  }, []);
+      fetchDataSource();
+    }
+  }, [isOpen]); // Only run when `isOpen` is true
 
-  // Fetch States
+  // Fetch States when modal is opened
   useEffect(() => {
-    const fetchStates = async () => {
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/states`, {
-          headers: { "Content-Type": "application/x-www-form-urlencoded" ,
-              'Authorization': `Bearer ${token}`, 
-          },
-        });
+    if (isOpen) {
+      const fetchStates = async () => {
+        try {
+          const response = await axios.get(`${import.meta.env.VITE_API_URL}/states`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
 
-        if (response.data?.success) {
-          const options = response.data.data.map((state) => ({
-            value: state.id,
-            label: state.state_name,
-          }));
-          setStateOptions(options);
-        } else {
-          toast.error("Failed to fetch states.");
+          console.log("states : ", response?.data);
+
+          if (response.data?.success) {
+            const options = response.data.data.map((state) => ({
+              value: state.id,
+              label: state.state_name,
+            }));
+            setStateOptions(options);
+          } else {
+            toast.error("Failed to fetch states.");
+          }
+        } catch (error) {
+          toast.error("Error fetching states!", { autoClose: 1500 });
         }
-      } catch (error) {
-        toast.error("Error fetching states!" , {autoClose : 1500});
-      }
-    };
+      };
 
-    fetchStates();
-  }, []);
+      fetchStates();
+    }
+  }, [isOpen]); // Only run when `isOpen` is true
 
-  // Fetch Product Types
+  // Fetch Product Types when modal is opened
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/products`, {
-          headers: { "Content-Type": "application/json" ,
-              'Authorization': `Bearer ${token}`, 
-          },
-        });
+    if (isOpen) {
+      const fetchProducts = async () => {
+        try {
+          const response = await axios.get(`${import.meta.env.VITE_API_URL}/products`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
 
-        if (response.data?.data && Array.isArray(response.data.data)) {
-          const options = response.data.data.map((product) => ({
-            value: product.id,
-            label: product.product,
-          }));
-          setProductOptions(options);
-        } else {
-          toast.error("Invalid product data received.");
+           console.log("products : ",response?.data);
+
+          if (response.data?.data && Array.isArray(response.data.data)) {
+            const options = response.data.data.map((product) => ({
+              value: product.id,
+              label: product.product,
+            }));
+            setProductOptions(options);
+          } else {
+            toast.error("Invalid product data received.");
+          }
+        } catch (error) {
+          toast.error("Failed to load product types!", { autoClose: 1500 });
         }
-      } catch (error) {
-        toast.error("Failed to load product types!" , {autoClose : 1500});
-      }
-    };
+      };
 
-    fetchProducts();
-  }, []);
+      fetchProducts();
+    }
+  }, [isOpen]); // Only run when `isOpen` is true
 
-  // Fetch Transaction Types based on Product Type
+  // Fetch Transaction Types based on Product Type when modal is opened
   const handleProductChange = async (option, field) => {
     field.onChange(option);
     if (option?.value) {
       try {
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/transactions/${option.value}`,
-          { headers: { "Content-Type": "application/x-www-form-urlencoded",
-              'Authorization': `Bearer ${token}`, 
-           } }
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          }
         );
 
         if (response.data?.data && Array.isArray(response.data.data)) {
-          const transOptions = response.data.data.map((item, index) => ({
-            value: index, // Using index since there's no ID
+          const transOptions = response.data.data.map((item) => ({
+            value: item.id,
             label: item.transaction_name,
           }));
           setTransactionOptions(transOptions);
@@ -139,16 +152,18 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
     }
   };
 
-  // Fetch Counties based on selected State
+  // Fetch Counties based on selected State when modal is opened
   const handleStateChange = async (option, field) => {
     field.onChange(option);
     if (option?.value) {
       try {
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/counties/states/${option.value}`,
-          { headers: { "Content-Type": "application/x-www-form-urlencoded",
-              'Authorization': `Bearer ${token}`, 
-           } }
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          }
         );
 
         if (response.data?.data && Array.isArray(response.data.data)) {
@@ -163,7 +178,7 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
         }
       } catch (error) {
         setCountyOptions([]);
-        toast.error("Failed to load counties." , {autoClose : 1500});
+        toast.error("Failed to load counties!", { autoClose: 1500 });
       }
     } else {
       setCountyOptions([]);
@@ -174,12 +189,12 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
   const handleFormSubmit = async (data) => {
     try {
       const formattedData = {
-        customer: data.customer,
-        state: data.state?.value || "",
-        county: data.county?.value || "",
-        product_type: data.product_type?.value || "",
-        transaction_type: data.transactionType?.value || "",
-        data_source: data.dataSource,
+        customer: data.customer?.label,
+        state: data.state?.label || "",
+        county: data.county?.label || "",
+        product_type: data.product_type?.label || "",
+        transaction_type: data.transactionType?.label || "",
+        data_source: data.dataSource?.label,
         workflow_group: data.workflowGroup,
       };
 
@@ -212,7 +227,6 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
     { value: 'customer1', label: 'Customer 1' },
     { value: 'customer2', label: 'Customer 2' },
     { value: 'customer3', label: 'Customer 3' },
-    // Add more options as needed
   ];
 
   return (
@@ -227,14 +241,14 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
               Customer <span className="text-danger">*</span>
             </Form.Label>
             <Controller
-        name="customer"
+              name="customer"
               control={control}
               render={({ field }) => (
                 <Select
                   {...field}
                   options={customerOptions}
                   required
-                  onChange={(selectedOption) => field.onChange(selectedOption?.value)} // Handle onChange to integrate with react-hook-form
+                  onChange={(selectedOption) => field.onChange(selectedOption)}
                   placeholder="Select a Customer"
                 />
               )}
@@ -329,25 +343,23 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
           </Form.Group>
 
           <Form.Group controlId="formDataSource" className="mt-2">
-          <Form.Label className="mb-0 text-muted">
+            <Form.Label className="mb-0 text-muted">
               Data Source <span className="text-danger">*</span>
             </Form.Label>
             <Controller
-            name="dataSource"
-            control={control}
-            render={({ field }) => (
-              <Select
-                {...field}
-                options={datasource} // Using the mapped dataSource options
-                placeholder="Select data source"
-                value={datasource.find((option) => option.value === field.value?.value) || null} // Match selected value
-                onChange={(selectedOption) => field.onChange(selectedOption)} // Correctly set the selected option
-                getOptionLabel={(option) => option.label} // Display the label of the option
-                required
-              />
-            )}
-          />
-
+              name="dataSource"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  options={datasource} // Using the mapped dataSource options
+                  placeholder="Select data source"
+                  value={datasource.find((option) => option.value === field.value?.value) || null} // Match selected value
+                  onChange={(option) => field.onChange(option)}
+                  required
+                />
+              )}
+            />
           </Form.Group>
 
           <Form.Group controlId="formWorkflowGroup" className="mt-2">

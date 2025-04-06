@@ -14,7 +14,7 @@ import { useAuth } from '../../../../Context/AuthContext';
 const ProductType = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editState, setEditState] = useState(null);
-  const [contactTypes, setContactTypes] = useState([]);
+  const [productType, setproductType] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const { token } = useAuth();
 
@@ -27,13 +27,13 @@ const ProductType = () => {
       });
       const { data } = response;
       if (data.success && Array.isArray(data.data)) {
-        setContactTypes(data.data);
+        setproductType(data.data);
       } else {
-        setContactTypes([]);
+        setproductType([]);
       }
     } catch (error) {
       console.error("Error fetching contacts:", error);
-      setContactTypes([]);
+      setproductType([]);
     }
   };
 
@@ -59,7 +59,7 @@ const ProductType = () => {
               'Authorization': `Bearer ${token}`,
             }
           });
-          setContactTypes(contactTypes.filter((product) => product.id !== productId));
+          setproductType(productType.filter((product) => product.id !== productId));
           toast.success("Product Type deleted successfully!", { autoClose: 1500 });
         } catch (error) {
           toast.error("Failed to delete Product Type. Please try again.", { autoClose: 1500 });
@@ -72,13 +72,19 @@ const ProductType = () => {
 
   const handleAddContactType = (newContact) => {
     if (newContact) {
-      setContactTypes((prev) => [...prev, newContact]);
+      setproductType((prev) => [...prev, newContact]);
     }
     setIsOpen(false);
   };
 
-  const handleEditState = (updatedState) => {
-    setContactTypes(contactTypes.map((type) => (type.id === updatedState.id ? updatedState : type)));
+  const handleEditState = (updatedType) => {
+    setproductType(prevTypes => 
+      prevTypes.map(type => 
+        type.id === updatedType.id 
+          ? { ...type, product: updatedType.product_name || updatedType.product } 
+          : type
+      )
+    );
     setIsEditOpen(false);
   };
 
@@ -105,7 +111,7 @@ const ProductType = () => {
           </div>
           <div className="card-body p-0 overflow-auto custom-scrollbar" style={{ maxHeight: '200px', height: '200px' }}>
             <ul className="list-group list-group-flush">
-              {contactTypes.map((type, index) => (
+              {productType.map((type, index) => (
                 <li key={index} className="list-group-item d-flex align-items-center text-muted">
                   <div className="d-flex align-items-center">
                     <Smile className="text-info me-2" size={16} />

@@ -7,52 +7,52 @@ import AddAssignedModal from './AssignedModal';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
-import EditAssignedWhen from './EditAssigned';
+import EditAssignedModal from './EditAssigned';
 import { useAuth } from '../../../../Context/AuthContext';
 
 const AssignedWhen = () => {
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [editState, setEditState] = useState(null);
-  const [states, setStates] = useState([]); // Correct state to manage fetched states
-  const [isOpen, setIsOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [currentEditState, setCurrentEditState] = useState(null);
+  const [assignedItems, setAssignedItems] = useState([]);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const { token } = useAuth();
 
-  // Fetch all states
-  const fetchAllStates = async () => {
+  // Fetch all assigned items
+  const fetchAllAssignedItems = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/assigned` , {
-        headers : {
-          'Authorization': `Bearer ${token}`, 
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/assigned`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
         }
       });
-      if (response.data.success && Array.isArray(response.data.data)) {
-        setStates(response.data.data);
+      if (response.data.status === 200 && Array.isArray(response.data.data)) {
+        setAssignedItems(response.data.data);
       } else {
-        setStates([]);
+        setAssignedItems([]);
       }
     } catch (error) {
-      console.error("Error fetching states:", error);
-      setStates([]);
-      toast.error("Failed to fetch assigned data.");
+      console.error("Error fetching assigned items:", error);
+      setAssignedItems([]);
+      toast.error(error.response?.data?.message || "Failed to fetch assigned data" , {autoClose : 1500});
     }
   };
 
   useEffect(() => {
-    fetchAllStates();
+    fetchAllAssignedItems();
   }, []);
 
-  // Add new state
-  const handleState = (newState) => {
-    setStates((prevState) => [...prevState, newState]);
-    setIsOpen(false);
+  // Add new assigned item
+  const handleAddAssignedItem = (newItem) => {
+    setAssignedItems((prevItems) => [...prevItems, newItem]);
+    setIsAddModalOpen(false);
   };
 
-  const handleEditState = (updatedState) => {
-    setStates(states.map((state) => (state.id === updatedState.id ? updatedState : state)));
-    setIsEditOpen(false);
+  const handleEditAssignedItem = (updatedItem) => {
+    setAssignedItems(assignedItems.map((item) => (item.id === updatedItem.id ? updatedItem : item)));
+    setIsEditModalOpen(false);
   };
 
-  const handleDeleteState = async (stateId) => {
+  const handleDeleteAssignedItem = async (itemId) => {
     const confirmDelete = await Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -66,22 +66,21 @@ const AssignedWhen = () => {
   
     if (confirmDelete.isConfirmed) {
       try {
-        await axios.delete(`${import.meta.env.VITE_API_URL}/assigned/${stateId}`, {
-          headers : {
-            'Authorization': `Bearer ${token}`, 
+        await axios.delete(`${import.meta.env.VITE_API_URL}/assigned/${itemId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
           }
         });
         
-        setStates(states.filter((state) => state.id !== stateId));
-        toast.success("Assigned When deleted successfully!" , {autoClose: 1500});
+        setAssignedItems(assignedItems.filter((item) => item.id !== itemId));
+        toast.success("Assigned item deleted successfully!", { autoClose: 1500 });
       } catch (error) {
         console.error("Error object:", error?.message);
-
         const errorMessage = error?.message;
         toast.error(errorMessage, { autoClose: 1500 });
       }
     } else if (confirmDelete.dismiss === Swal.DismissReason.cancel) {
-      Swal.fire("Cancelled", "Your Assigned When is safe!", "info");
+      Swal.fire("Cancelled", "Your assigned item is safe!", "info");
     }
   };
 
@@ -100,7 +99,7 @@ const AssignedWhen = () => {
                   background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)'
                 }}
                 className="btn btn-sm"
-                onClick={() => setIsOpen(true)} // Open modal on click
+                onClick={() => setIsAddModalOpen(true)} // Open modal on click
               >
                 <FaPlus color="white" size={16} />
               </button>
@@ -108,24 +107,26 @@ const AssignedWhen = () => {
           </div>
           <div className="card-body p-0 custom-scrollbar overflow-auto" style={{ height: '200px', maxHeight: '200px' }}>
             <ul className="list-group list-group-flush">
-              {states.map((state, index) => (
+              {assignedItems.map((item, index) => (
                 <li key={index} className="list-group-item d-flex align-items-center text-muted">
                   <div className="d-flex align-items-center">
                     <Smile className="text-info me-2" size={16} />
-                    {state.assigned_name}
+                    {item.name}
                   </div>
                   <div className="d-flex align-items-center ms-auto">
                     <div 
                       onClick={() => {
-                        setEditState(state);
-                        setIsEditOpen(true);
+                        setCurrentEditState(item);
+                        setIsEditModalOpen(true);
                       }}
-                    className="d-flex justify-content-center align-items-center p-2 bg-primary bg-opacity-10 text-primary me-2 rounded-2" style={{ cursor: 'pointer', width: '1.75rem', height: '1.75rem' }}>
+                      className="d-flex justify-content-center align-items-center p-2 bg-primary bg-opacity-10 text-primary me-2 rounded-2" style={{ cursor: 'pointer', width: '1.75rem', height: '1.75rem' }}
+                    >
                       <FaRegPenToSquare />
                     </div>
                     <div 
-                    onClick={() => handleDeleteState(state.id)}
-                    className="d-flex justify-content-center align-items-center p-2 bg-danger bg-opacity-10 text-danger rounded-2" style={{ cursor: 'pointer', width: '1.75rem', height: '1.75rem' }}>
+                      onClick={() => handleDeleteAssignedItem(item.id)}
+                      className="d-flex justify-content-center align-items-center p-2 bg-danger bg-opacity-10 text-danger rounded-2" style={{ cursor: 'pointer', width: '1.75rem', height: '1.75rem' }}
+                    >
                       <RiDeleteBin6Line />
                     </div>
                   </div>
@@ -134,8 +135,8 @@ const AssignedWhen = () => {
             </ul>
           </div>
         </div>
-        <AddAssignedModal isOpen={isOpen} setIsOpen={setIsOpen} onSubmit={handleState} />
-        {isEditOpen && <EditAssignedWhen isOpen={isEditOpen} setIsOpen={setIsEditOpen} onSubmit={handleEditState} editState={editState} />}
+        <AddAssignedModal isOpen={isAddModalOpen} setIsOpen={setIsAddModalOpen} onSubmit={handleAddAssignedItem} />
+        {isEditModalOpen && <EditAssignedModal isOpen={isEditModalOpen} setIsOpen={setIsEditModalOpen} onSubmit={handleEditAssignedItem} editState={currentEditState} />}
       </div>
     </>
   );

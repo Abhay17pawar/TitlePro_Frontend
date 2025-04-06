@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Container, Row, Col, Form, InputGroup, Button, Table, Pagination } from "react-bootstrap";
+import { Container, Row, Col, Form, InputGroup, Button, Table } from "react-bootstrap";
 import { Search, PlusCircle, Filter, Download, FileText, ChevronRight, ChevronLeft } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -13,13 +13,12 @@ const OrdersTable = () => {
   const [isOpen, setIsOpen] = useState(false); // Modal state
   const [orders, setOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const contactsPerPage = 8;
+  const ordersPerPage = 8;
   const { token } = useAuth();
   
   // Fetch orders from the API
   const fetchOrders = async () => {
     try {
-
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/orders`, {
         headers: {
           "Content-Type": "application/json",
@@ -50,10 +49,10 @@ const OrdersTable = () => {
   };
 
   // Calculate indices for pagination
-  const indexOfLastOrder = currentPage * contactsPerPage;
-  const indexOfFirstOrder = indexOfLastOrder - contactsPerPage;
+  const indexOfLastOrder = currentPage * ordersPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
   const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
-  const totalPages = Math.ceil(orders.length / contactsPerPage);
+  const totalPages = Math.ceil(orders.length / ordersPerPage);
 
   // Format date to match the display
   const formatDate = (dateString) => {
@@ -126,24 +125,7 @@ const OrdersTable = () => {
                 <td className="text-muted">{order.customer}</td>
                 <td className="text-muted"></td>
                 <td className="text-muted">{order.transaction_type}</td>
-                <td className="text-muted">
-  {order.data_source 
-    ? (typeof order.data_source === 'string' 
-        ? (() => {
-            try {
-              // Attempt to parse the string as JSON
-              const parsedData = JSON.parse(order.data_source);
-              return parsedData.label || "Unknown"; // Return the label if present
-            } catch (e) {
-              // If parsing fails, return the raw string (or any fallback you need)
-              return "Invalid data source"; 
-            }
-          })() 
-        : order.data_source?.label || "Unknown") // If already an object, just access the label
-    : "Unknown"}
-</td>
-
-
+                <td className="text-muted">{order.data_source}</td>
                 <td className="text-muted">{order.state}</td>
                 <td className="text-muted">{order.county}</td>
                 <td className="text-muted">{order.workflow_group}</td>
@@ -190,7 +172,6 @@ const OrdersTable = () => {
           </ul>
         </nav>
           <OrderPageModal isOpen={isOpen} setIsOpen={setIsOpen} onSubmit={handleAddOrder} />
-        
       </div>
     </Container>
   );

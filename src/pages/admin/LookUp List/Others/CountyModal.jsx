@@ -5,9 +5,22 @@ import { toast } from "react-toastify";
 import Select from "react-select";
 import axios from "axios";
 import { useAuth } from "../../../../Context/AuthContext";
+import * as yup from "yup"; 
+import { yupResolver } from "@hookform/resolvers/yup"; 
+
+// Define Yup validation schema
+const validationSchema = yup.object({
+  name: yup
+    .string()
+    .trim() 
+    .required("County Name is required") 
+    .matches(/^[^\d]*$/, "Contact Type must not contain any digits")
+});
 
 const AddCountyModal = ({ isOpen, setIsOpen, onSubmit }) => {
-  const { control, handleSubmit, reset, formState: { errors } } = useForm();
+  const { control, handleSubmit, reset, formState: { errors } } = useForm({
+    resolver: yupResolver(validationSchema), 
+  });
   const [states, setStates] = useState([]); // Store states
   const [selectedState, setSelectedState] = useState(null); // Store selected state
   const { token } = useAuth();
@@ -15,27 +28,26 @@ const AddCountyModal = ({ isOpen, setIsOpen, onSubmit }) => {
   // Fetch states when modal opens
   useEffect(() => {
     if (isOpen) {
-      axios.get(`${import.meta.env.VITE_API_URL}/states`,{
-        headers : {
-          'Authorization': `Bearer ${token}`, 
+      axios.get(`${import.meta.env.VITE_API_URL}/state`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
         }
-      }) // Fetch states from the API
+      })
         .then(response => {
           const stateArray = response.data?.data || []; // Ensure correct array format
           const stateOptions = stateArray.map(state => ({
             value: state.id,  // Store state ID
-            label: state.state_name // Store state name
+            label: state.name // Store state name
           }));
 
           setStates(stateOptions);
-          console.log("Fetched States:", stateOptions); // Debugging log
         })
         .catch(error => {
           console.error("Error fetching states:", error);
           toast.error("Failed to fetch states.");
         });
     }
-  }, [isOpen]);
+  }, [isOpen, token]);
 
   // Handle form submission
   const handleFormSubmit = async (data) => {
@@ -46,30 +58,28 @@ const AddCountyModal = ({ isOpen, setIsOpen, onSubmit }) => {
       }
 
       const requestData = {
-        state_name: selectedState.label,  // Sending selected state name
-        county_name: data.county_name, // Sending county name
-        stateId: selectedState.value,  // Sending selected state ID
+        name: data.name, // Sending county name
+        state_id: selectedState.value,  // Sending selected state ID
       };
 
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/counties`, requestData, {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/county`, requestData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
 
-      const result = response.data;
-      if (result.success) {
-        toast.success("County added successfully!", { autoClose: 1500 });
+      if (response.data.status === 201) {
+        toast.success(response.data?.message || "County added successfully!", { autoClose: 1500 });
         onSubmit(requestData);
         setIsOpen(false);
         reset();
         setSelectedState(null); 
       } else {
-        toast.error(result.message || "Failed to add county.");
+        toast.error(response.data?.message || "Failed to add county." , {autoClose : 1500});
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while adding County.";
+      const errorMessage = error.response?.data?.message || "An error occurred while adding County.";
       toast.error(errorMessage, { autoClose: 1500 });
     }
   };
@@ -88,7 +98,6 @@ const AddCountyModal = ({ isOpen, setIsOpen, onSubmit }) => {
               options={states}
               value={selectedState}
               onChange={(selected) => {
-                console.log("Selected State:", selected); // Debugging log
                 setSelectedState(selected);
               }}
               placeholder="Select a state"
@@ -99,20 +108,19 @@ const AddCountyModal = ({ isOpen, setIsOpen, onSubmit }) => {
           <Form.Group controlId="formCountyName" className="mb-3">
             <Form.Label className="text-muted mb-0">County Name</Form.Label>
             <Controller
-              name="county_name"
+              name="name"
               control={control}
-              rules={{ required: "County Name is required" }}
               render={({ field }) => (
                 <>
                   <Form.Control
                     type="text"
                     {...field}
                     value={field.value || ""}
-                    isInvalid={!!errors.county_name}
+                    isInvalid={!!errors.name}
                   />
-                  {errors.county_name && (
+                  {errors.name && (
                     <Form.Control.Feedback type="invalid">
-                      {errors.county_name.message}
+                      {errors.name.message}
                     </Form.Control.Feedback>
                   )}
                 </>

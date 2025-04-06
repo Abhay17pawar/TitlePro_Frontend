@@ -5,17 +5,30 @@ import { toast } from "react-toastify";
 import Select from "react-select";
 import axios from "axios";
 import { useAuth } from "../../../Context/AuthContext";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup"
+
+const validationSchema = yup.object({
+  transaction_type : yup
+                 .string()
+                 .trim()
+                 .required("Transaction Type is required")
+                 .matches(/^[^\d]*$/, "Transaction Type must not contain any digits")
+});
 
 const TransactionTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
-  const { control, handleSubmit, reset, formState: { errors } } = useForm();
-  const [productOptions, setProductOptions] = useState([]); // Store products
-  const [selectedProduct, setSelectedProduct] = useState(null); // Store selected product
+  const { control, handleSubmit, reset, formState: { errors } } = useForm({
+    resolver : yupResolver(validationSchema)
+  });
+
+  const [transactionType, settransactionType] = useState([]); // Store products
+  const [selectedTransactionType, setselectedTransactionType] = useState(null); // Store selected product
   const { token } = useAuth();
 
   // Fetch product types when modal opens
   useEffect(() => {
     if (isOpen) {
-      axios.get(`${import.meta.env.VITE_API_URL}/products` , {
+      axios.get(`${import.meta.env.VITE_API_URL}/products`, {
         headers : {
           'Authorization': `Bearer ${token}`, 
         }
@@ -27,8 +40,7 @@ const TransactionTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
             label: product.product // Store product name
           }));
 
-          setProductOptions(products);
-          console.log("Fetched Products:", products); // ✅ Debugging log
+          settransactionType(products);
         })
         .catch(error => {
           console.error("Error fetching products:", error);
@@ -40,15 +52,15 @@ const TransactionTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
   // Handle form submission
   const handleFormSubmit = async (data) => {
     try {
-      if (!selectedProduct) {
+      if (!selectedTransactionType) {
         toast.error("Please select a product type.", { autoClose: 1500 });
         return;
       }
 
       const requestData = {
-        product_name: selectedProduct.label,  
+        product_name: selectedTransactionType.label,  
         transaction_name: data.transaction_type, 
-        productId: selectedProduct.value,  
+        productId: selectedTransactionType.value,  
       };
 
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/transactions`, requestData, {
@@ -64,7 +76,7 @@ const TransactionTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
         onSubmit(requestData);
         setIsOpen(false);
         reset();
-        setSelectedProduct(null); 
+        setselectedTransactionType(null); 
       } else {
         toast.error("Failed to add transaction type.", { autoClose: 1500 });
       }
@@ -84,11 +96,9 @@ const TransactionTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
           <Form.Group controlId="formProductType" className="mb-3">
             <Form.Label className="text-muted mb-0">Product Type</Form.Label>
             <Select
-              options={productOptions}
-              value={selectedProduct}
-              onChange={(selected) => {
-                setSelectedProduct(selected);
-              }}
+              options={transactionType}
+              value={selectedTransactionType}
+              onChange={(selected) => setselectedTransactionType(selected)}
               placeholder="Select a product"
             />
           </Form.Group>

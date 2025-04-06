@@ -21,21 +21,19 @@ const ContactType = () => {
   // Fetch all contact types from the API
   const fetchAllContacts = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/contact-types`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/contact-type`, {
         headers: {
-          'Authorization': `Bearer ${token}` // Add the Authorization header with the token
+          'Authorization': `Bearer ${token}` 
         },
       });
 
-      const { data } = response;
-
-      if (data.success && Array.isArray(data.data)) {
-        setContactTypes(data.data);
+      if (response.data.status === 200 && Array.isArray(response.data.data)) {
+        setContactTypes(response.data.data); 
       } else {
-        setContactTypes([]);
+        setContactTypes([]); // If no valid data, set an empty array
       }
     }catch (error) {
-      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while fetching Contact Type.";
+      const errorMessage = error.response?.data?.message || "An error occurred while fetching Contact Type.";
       toast.error(errorMessage, { autoClose: 1500 });
       setContactTypes([]);
     }
@@ -43,7 +41,7 @@ const ContactType = () => {
 
   useEffect(() => {
     fetchAllContacts();
-  }, [token]); // Refetch when token changes
+  }, [token]); 
 
   // Handle adding a new contact type
   const handleAddContactType = (newContact) => {
@@ -80,7 +78,7 @@ const ContactType = () => {
             setContactTypes(contactTypes.filter((contact) => contact.id !== productId));
             toast.success("Contact Type deleted successfully!", { autoClose: 1500 });
           } catch (error) {
-            const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while deleting Contact Type.";
+            const errorMessage = error.response?.data?.message || "An error occurred while deleting Contact Type.";
             toast.error(errorMessage, { autoClose: 1500 });
           }
         } else if (result.dismiss === Swal.DismissReason.cancel) {
@@ -114,10 +112,10 @@ const ContactType = () => {
           <div className="card-body p-0 overflow-auto custom-scrollbar" style={{ maxHeight: '200px', height: '200px' }}>
             <ul className="list-group list-group-flush">
               {contactTypes.map((type, index) => (
-                <li key={index} className="list-group-item d-flex align-items-center text-muted">
+                <li key={type.id || index} className="list-group-item d-flex align-items-center text-muted">
                   <div className="d-flex align-items-center">
                     <Smile className="text-info me-2" size={16} />
-                    {type.contact_type}
+                    {type.name}
                   </div>
                   <div className="d-flex align-items-center ms-auto">
                     <div

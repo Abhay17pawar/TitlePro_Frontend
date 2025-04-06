@@ -3,7 +3,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Plus, Trash2 } from "lucide-react";
 import AddContactTypeModal from "./ContactTypeModal"; // Import the modal
 import axios from "axios";
-import { toast } from "react-toastify";
 import { useAuth } from "../../../Context/AuthContext";
 
 const ContactTypeTable = () => {

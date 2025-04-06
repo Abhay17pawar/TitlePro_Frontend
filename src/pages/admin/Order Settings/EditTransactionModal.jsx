@@ -4,17 +4,30 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useAuth } from "../../../Context/AuthContext";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup"
 
-const EditTransactionTypeModal = ({ isOpen, setIsOpen, onSubmit, editContact }) => {
-  const { control, handleSubmit, reset, formState: { errors } } = useForm();
+const validationSchema = yup.object({
+  transaction_type : yup
+                 .string()
+                 .trim()
+                 .required("Transaction Type is required")
+                 .matches(/^[^\d]*$/, "Transaction Type must not contain any digits")
+});
+
+const EditTransactionTypeModal = ({ isOpen, setIsOpen, onSubmit, editTransactionType }) => {
+  const { control, handleSubmit, reset, formState: { errors } } = useForm({
+    resolver : yupResolver(validationSchema)
+  });
   const { token } = useAuth();
+
   useEffect(() => {
-    if (isOpen && editContact) {
+    if (isOpen && editTransactionType) {
       reset({
-        transaction_type: editContact.transaction_name, // Populate with existing transaction name
+        transaction_type: editTransactionType.transaction_name, // Populate with existing transaction name
       });
     }
-  }, [isOpen, editContact, reset]);
+  }, [isOpen, editTransactionType, reset]);
 
   const handleFormSubmit = async (data) => {
     try {
@@ -22,7 +35,7 @@ const EditTransactionTypeModal = ({ isOpen, setIsOpen, onSubmit, editContact }) 
         transaction_name: data.transaction_type, // Only update transaction type
       };
 
-      const response = await axios.patch(`${import.meta.env.VITE_API_URL}/transactions/${editContact.id}`, requestData, {
+      const response = await axios.patch(`${import.meta.env.VITE_API_URL}/transactions/${editTransactionType.id}`, requestData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -30,8 +43,8 @@ const EditTransactionTypeModal = ({ isOpen, setIsOpen, onSubmit, editContact }) 
 
       if (response.data.success) {
         toast.success("Transaction Type updated successfully!", { autoClose: 1500 });
-        onSubmit({ ...editContact, ...requestData });
-        setIsOpen(false);
+        onSubmit({ ...editTransactionType, ...requestData }); // Pass the updated contact info
+        setIsOpen(false); // Close the modal after submitting
       } else {
         toast.error("Failed to update transaction type.", { autoClose: 1500 });
       }

@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { FaRegPenToSquare } from "react-icons/fa6";
 import EditContactModal from "./EditContactTypeModal";
-import {useAuth} from "../../Context/AuthContext";
+import { useAuth } from "../../Context/AuthContext";
 import Swal from "sweetalert2";
 
 const ContactTable = () => {
@@ -20,7 +20,7 @@ const ContactTable = () => {
   const [isOpen, setIsOpen] = useState(false); // Modal state
   const [contact, setContact] = useState([]); // New contact state
   const [isEditOpen, setIsEditOpen] = useState(false); // Separate modal state for editing
-  const [editContact, setEditContact] = useState(null);
+  const [editContact, setEditContact] = useState(null); // State for the contact being edited
   const contactsPerPage = 8;
   const navigate = useNavigate();
   const { token } = useAuth();
@@ -31,12 +31,10 @@ const ContactTable = () => {
       navigate("/deleted-contact");
     }
   }, [activeTab, navigate]);
-  
 
   // Fetch all contacts
   const fetchAllContacts = async () => {
     try {
-
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/contacts`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -73,15 +71,18 @@ const ContactTable = () => {
   const totalPages = Math.ceil(contacts.length / contactsPerPage);
 
   const handleEditTransactionType = (updatedContact) => {
-    setContacts(contacts.map(contact => 
-      contact.id === updatedContact.id ? updatedContact : contact
-    ));
+    // Update the state with the edited contact
+    setContacts((prevContacts) =>
+      prevContacts.map((contact) =>
+        contact.id === updatedContact.id ? updatedContact : contact
+      )
+    );
     setIsEditOpen(false); // Close modal after editing
   };
 
   const handleEditClick = (contactToEdit) => {
-    setEditContact(contactToEdit);
-    setIsEditOpen(true);
+    setEditContact(contactToEdit); // Set the contact to edit
+    setIsEditOpen(true); // Open edit modal
   };
 
   const handleDeleteClick = async (transactionId) => {
@@ -111,7 +112,7 @@ const ContactTable = () => {
           toast.error("Failed to delete Contact", { autoClose: 1500 });
         }
       } catch (error) {
-        toast.error(error.response?.data?.message || "an error occurred while deleting Contact!", { autoClose: 1500 });
+        toast.error(error.response?.data?.message || "An error occurred while deleting Contact!", { autoClose: 1500 });
       }
     } else if (confirmDelete.dismiss === Swal.DismissReason.cancel) {
       Swal.fire("Cancelled", "Your Contact is safe!", "info");
@@ -183,19 +184,19 @@ const ContactTable = () => {
               {currentContacts.map((contact, index) => (
                 <tr key={contact.id} className={index % 2 === 0 ? "bg-white" : "bg-light"}>
                   <td className="text-muted">
-                  <Link 
-                    to={`/contacts/${contact.id}`} 
-                    style={{ textDecoration: 'none', color: 'info' }}
-                  >
-                    {contact.name}
-                  </Link>
-                </td>
-                  <td className="text-muted">
-                  {contact.type 
-                    ? (typeof contact.type === 'string' ? JSON.parse(contact.type).label : contact.type.label) 
-                    : "Unknown"}
+                    <Link 
+                      to={`/contacts/${contact.id}`} 
+                      style={{ textDecoration: 'none', color: 'info' }}
+                    >
+                      {contact.name}
+                    </Link>
                   </td>
-                 <td className="text-muted">{contact.address}</td>
+                  <td className="text-muted">
+                    {contact.type 
+                      ? (typeof contact.type === 'string' ? JSON.parse(contact.type).value : contact.type.value) 
+                      : "Unknown"}
+                  </td>
+                  <td className="text-muted">{contact.address}</td>
                   <td className="text-muted">{contact.phone}</td>
                   <td className="text-muted">{contact.email}</td>
                   <td className="text-muted">{contact.invoiceTerms} {'Net 30'}</td>
@@ -256,6 +257,6 @@ const ContactTable = () => {
       {isEditOpen && <EditContactModal isOpen={isEditOpen} setIsOpen={setIsEditOpen} onSubmit={handleEditTransactionType} editContact={editContact} />}
     </div>
   );
-}
+};
 
-export default ContactTable; 
+export default ContactTable;

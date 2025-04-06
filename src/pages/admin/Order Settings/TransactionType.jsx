@@ -4,28 +4,25 @@ import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import TransactionTypeModal from "./TransactionTypeModal";
+import TransactionTypeModal from "./TransactionTypeModal"; // Correct import
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { FaRegPenToSquare } from "react-icons/fa6";
-import EditTransactionTypeModal from "./EditTransactionModal";
+import EditTransactionTypeModal from "./EditTransactionModal"; // Correct import
 import { useAuth } from "../../../Context/AuthContext";
 import Swal from "sweetalert2";
 
 export default function TransactionType() {
-  const [contactTypes, setContactTypes] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [transaction, settransaction] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [contacts, setContacts] = useState([]);
+  const [transactionType, settransactionType] = useState([]);
   const [isAddOpen, setIsAddOpen] = useState(false); // Separate modal state for adding
   const [isEditOpen, setIsEditOpen] = useState(false); // Separate modal state for editing
-  const [editContact, setEditContact] = useState(null); // State for the contact to be edited
-  const contactsPerPage = 8;
-  const navigate = useNavigate();
+  const [editTransactionType, seteditTransactionType] = useState(null); // State for the transactiontype to be edited
+  const transactionTypePerPage = 8;
   const { token } = useAuth();
 
-  const fetchAllContacts = async () => {
+  const fetchAlltransactionType = async () => {
     try {
-      
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/transactions`,{
         headers : {
           'Authorization': `Bearer ${token}`, 
@@ -35,31 +32,31 @@ export default function TransactionType() {
       const { data } = response;
 
       if (data.success && Array.isArray(data.data)) {
-        setContactTypes(data.data);
-        setContacts(data.data); // Ensure contacts state is updated for pagination
+        settransaction(data.data);
+        settransactionType(data.data); // Ensure transactionType state is updated for pagination
       } else {
-        setContactTypes([]);
-        setContacts([]);
+        settransaction([]);
+        settransactionType([]);
       }
     } catch (error) {
-      console.error("Error fetching contacts:", error);
-      setContactTypes([]);
-      setContacts([]);
+      console.error("Error fetching transactionType:", error);
+      settransaction([]);
+      settransactionType([]);
     }
   };
 
   useEffect(() => {
-    fetchAllContacts();
+    fetchAlltransactionType();
   }, []);
 
-  const handleAddContactType = async (newContact) => {
+  const handleAddTransactionType = async (newtransactiontype) => {
     try {
-      // Optimistically update the UI with the new contact
-      setContactTypes((prevContactTypes) => [...prevContactTypes, newContact]);
-      setContacts((prevContacts) => [...prevContacts, newContact]);
+      // Optimistically update the UI with the new transactiontype
+      settransaction((prevtransaction) => [...prevtransaction, newtransactiontype]);
+      settransactionType((prevtransactionType) => [...prevtransactionType, newtransactiontype]);
   
       // After adding, refetch all transactions to ensure correct IDs
-      await fetchAllContacts();
+      await fetchAlltransactionType();
   
       setIsAddOpen(false); // Close modal after submission
     } catch (error) {
@@ -69,18 +66,18 @@ export default function TransactionType() {
   };
   
 
-  // Handle editing an existing contact type
-  const handleEditTransactionType = (updatedContact) => {
-    setContactTypes(contactTypes.map(contact => 
-      contact.id === updatedContact.id ? updatedContact : contact
+  // Handle editing an existing transactiontype type
+  const handleEditTransactionType = (updatedTransactionType) => {
+    settransaction(transaction.map(transactiontype => 
+      transactiontype.id === updatedTransactionType.id ? updatedTransactionType : transactiontype
     ));
-    setContacts(contacts.map(contact => 
-      contact.id === updatedContact.id ? updatedContact : contact
+    settransactionType(transactionType.map(transactiontype => 
+      transactiontype.id === updatedTransactionType.id ? updatedTransactionType : transactiontype
     ));
     setIsEditOpen(false); // Close modal after editing
   };
 
-  const handleDeleteContact = async (transactionId) => {
+  const handleDeleteTransactionType = async (transactionId) => {
     const confirmDelete = await Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -101,8 +98,8 @@ export default function TransactionType() {
         });
         
         if (response.data.success) {
-          setContactTypes(contactTypes.filter(transaction => transaction.id !== transactionId));
-          setContacts(contacts.filter(transaction => transaction.id !== transactionId));
+          settransaction(transaction.filter(transaction => transaction.id !== transactionId));
+          settransactionType(transactionType.filter(transaction => transaction.id !== transactionId));
           toast.success("Transaction Type deleted successfully.", { autoClose: 1500 });
         } else {
           toast.error("Failed to delete Transaction Type.", { autoClose: 1500 });
@@ -117,10 +114,10 @@ export default function TransactionType() {
   };
 
   // Pagination logic
-  const indexOfLastContact = currentPage * contactsPerPage;
-  const indexOfFirstContact = indexOfLastContact - contactsPerPage;
-  const currentContacts = contacts.slice(indexOfFirstContact, indexOfLastContact);
-  const totalPages = Math.ceil(contacts.length / contactsPerPage);
+  const indexOfLasttransactiontype = currentPage * transactionTypePerPage;
+  const indexOfFirsttransactiontype = indexOfLasttransactiontype - transactionTypePerPage;
+  const currenttransactionType = transactionType.slice(indexOfFirsttransactiontype, indexOfLasttransactiontype);
+  const totalPages = Math.ceil(transactionType.length / transactionTypePerPage);
 
   return (
     <div className="container-fluid p-0">
@@ -184,10 +181,10 @@ export default function TransactionType() {
               </tr>
             </thead>
             <tbody>
-              {currentContacts.map((contact, index) => (
-                <tr key={contact.id} className={index % 2 === 0 ? "bg-white" : "bg-light"}>
-                  <td className="text-muted">{contact.product_name}</td>
-                  <td className="text-muted">{contact.transaction_name}</td>
+              {currenttransactionType.map((transactiontype, index) => (
+                <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-light"}>
+                  <td className="text-muted">{transactiontype.product_name}</td>
+                  <td className="text-muted">{transactiontype.transaction_name}</td>
                   <td className="text-muted">{JSON.parse(localStorage.getItem("user"))?.name}</td>
                   <td className="text-muted">
                     <div className="d-flex align-items-center ms-auto">
@@ -195,7 +192,7 @@ export default function TransactionType() {
                         className="d-flex justify-content-center align-items-center p-2 bg-primary bg-opacity-10 text-primary me-2 rounded-2"
                         style={{ cursor: 'pointer', width: '1.75rem', height: '1.75rem' }}
                         onClick={() => {
-                          setEditContact(contact);
+                          seteditTransactionType(transactiontype);
                           setIsEditOpen(true); // Open Edit Modal
                         }}
                       >
@@ -204,7 +201,7 @@ export default function TransactionType() {
                       <div
                         className="d-flex justify-content-center align-items-center p-2 bg-danger bg-opacity-10 text-danger rounded-2"
                         style={{ cursor: 'pointer', width: '1.75rem', height: '1.75rem' }}
-                        onClick={() => handleDeleteContact(contact.id)}
+                        onClick={() => handleDeleteTransactionType(transactiontype.id)}
                       >
                         <RiDeleteBin6Line />
                       </div>
@@ -247,8 +244,8 @@ export default function TransactionType() {
       </div>
 
       {/* Conditionally render Add or Edit modal */}
-      {isAddOpen && <TransactionTypeModal isOpen={isAddOpen} setIsOpen={setIsAddOpen} onSubmit={handleAddContactType} />}
-      {isEditOpen && <EditTransactionTypeModal isOpen={isEditOpen} setIsOpen={setIsEditOpen} onSubmit={handleEditTransactionType} editContact={editContact} />}
+      {isAddOpen && <TransactionTypeModal isOpen={isAddOpen} setIsOpen={setIsAddOpen} onSubmit={handleAddTransactionType} />}
+      {isEditOpen && <EditTransactionTypeModal isOpen={isEditOpen} setIsOpen={setIsEditOpen} onSubmit={handleEditTransactionType} editTransactionType={editTransactionType} />}
     </div>
   );
 }

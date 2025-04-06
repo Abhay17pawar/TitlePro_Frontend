@@ -14,8 +14,8 @@ import WorkflowTableAddModal from "./WorkflowTableAddModal";
 export default function WorkflowDetails() {
   const { id } = useParams(); // Get ID from URL
   const [workflow, setWorkflow] = useState(null);
-  const [contactTypes, setContactTypes] = useState([]);
-  const [contacts, setContacts] = useState([]);
+  const [workflowDetails, setworkflowDetails] = useState([]);
+  const [changedworkflow, setchangedworkflow] = useState([]);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const { token } = useAuth();
 
@@ -36,12 +36,12 @@ export default function WorkflowDetails() {
     if (id) fetchWorkflow();
   }, [id]);
 
-    const handleAddContactType = async (newContact) => {
+    const handleAddWorkflowDetails = async (newContact) => {
       try {
-        setContactTypes((prevContactTypes) => [...prevContactTypes, newContact]);
-        setContacts((prevContacts) => [...prevContacts, newContact]);
+        setworkflowDetails((prevworkflowDetails) => [...prevworkflowDetails, newContact]);
+        setchangedworkflow((prevchangedworkflow) => [...prevchangedworkflow, newContact]);
     
-        await fetchAllContacts();
+        await fetchAllchangedworkflow();
     
         setIsAddOpen(false); // Close modal after submission
       } catch (error) {
@@ -77,7 +77,7 @@ export default function WorkflowDetails() {
   <div className="px-3">
    <WorkflowTable/>
   </div>
-  {isAddOpen && <AddWorkflowDetailsModal isOpen={isAddOpen} setIsOpen={setIsAddOpen} onSubmit={handleAddContactType} />}
+  {isAddOpen && <AddWorkflowDetailsModal isOpen={isAddOpen} setIsOpen={setIsAddOpen} onSubmit={handleAddWorkflowDetails} />}
 
     </div>
   );

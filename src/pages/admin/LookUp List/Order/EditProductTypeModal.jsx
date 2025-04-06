@@ -1,25 +1,37 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Modal, Form, Button } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useAuth } from "../../../../Context/AuthContext";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+
+const validationSchema = yup.object({
+  product_name: yup
+    .string()
+    .trim()
+    .required("Product Type is required")
+    .matches(/^[^\d]*$/, "Contact Type must not contain any digits")
+});
 
 const EditProductTypeModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
-  const { control, handleSubmit, reset, formState: { errors } } = useForm();
+  const { control, handleSubmit, reset, formState: { errors } } = useForm({
+    resolver: yupResolver(validationSchema),
+  });
+
   const { token } = useAuth();
-  
-  // Effect to reset form with the editState when the modal is opened or editState changes
+
   useEffect(() => {
+    // Only reset when editState and editState.product_name are available
     if (isOpen && editState) {
       reset({
-        product_name: editState.product_name || '', // Ensure we set default to empty string if undefined
+        product_name: editState.product_name || editState.product, // Default to empty string if undefined
       });
     }
   }, [isOpen, editState, reset]);
 
   const handleFormSubmit = async (data) => {
-    // Validation is handled automatically by react-hook-form
     try {
       const requestData = {
         product_name: data.product_name, // Only update product name
@@ -38,7 +50,6 @@ const EditProductTypeModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
 
       if (response.data.success) {
         toast.success("Product Type updated successfully!", { autoClose: 1500 });
-        // On successful update, trigger the onSubmit function to update the parent state
         onSubmit({ ...editState, ...requestData });
         setIsOpen(false); // Close the modal
       } else {
@@ -63,7 +74,6 @@ const EditProductTypeModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
             <Controller
               name="product_name"
               control={control}
-              rules={{ required: "Product Name is required" }}
               render={({ field }) => (
                 <>
                   <Form.Control

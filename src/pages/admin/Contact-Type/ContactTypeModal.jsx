@@ -1,16 +1,27 @@
 import { Modal, Form, Button } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import axios from "axios"; // Import axios
+import axios from "axios"; 
 import { useAuth } from "../../../Context/AuthContext";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup"
+
+const validationSchema = yup.object({
+  contact_type : yup
+                 .string()
+                 .trim()
+                 .required("Contact Type is required")
+                 .matches(/^[^\d]*$/, "Contact Type must not contain any digits")});
 
 const AddContactTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
-  const { control, handleSubmit, reset, formState: { errors } } = useForm();
+  const { control, handleSubmit, reset, formState: { errors } } = useForm({
+    resolver : yupResolver(validationSchema)
+  });
+
   const { token } = useAuth();
 
   const handleFormSubmit = async (data) => {
     try {
-      
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/contact-types`, data, {
         headers: {
           "Content-Type": "application/json",

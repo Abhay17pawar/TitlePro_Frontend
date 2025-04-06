@@ -237,7 +237,7 @@ useEffect(() => {
                         {...field}
                         options={contactTypes}
                         placeholder="Select Type"
-                        getOptionLabel={(e) => e.label}
+                        getOptionLabel={(e) => e.value}
                       />
                     )}
                   />
