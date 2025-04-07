@@ -20,14 +20,13 @@ const ProductType = () => {
 
   const fetchAllProductType = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/products`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/product`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         }
       });
-      const { data } = response;
-      if (data.success && Array.isArray(data.data)) {
-        setproductType(data.data);
+      if (response.data.status === 200 && Array.isArray(response.data.data)) {
+        setproductType(response.data.data);
       } else {
         setproductType([]);
       }
@@ -54,15 +53,15 @@ const ProductType = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`${import.meta.env.VITE_API_URL}/products/${productId}`, {
+          const response = await axios.delete(`${import.meta.env.VITE_API_URL}/product/${productId}`, {
             headers: {
               'Authorization': `Bearer ${token}`,
             }
           });
           setproductType(productType.filter((product) => product.id !== productId));
-          toast.success("Product Type deleted successfully!", { autoClose: 1500 });
+          toast.success(response.data?.message || "Product Type deleted successfully!", { autoClose: 1500 });
         } catch (error) {
-          toast.error("Failed to delete Product Type. Please try again.", { autoClose: 1500 });
+          toast.error(response.data?.message || "Failed to delete Product Type. Please try again.", { autoClose: 1500 });
         }
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         Swal.fire("Cancelled", "Your product type is safe!", "info");
@@ -115,7 +114,7 @@ const ProductType = () => {
                 <li key={index} className="list-group-item d-flex align-items-center text-muted">
                   <div className="d-flex align-items-center">
                     <Smile className="text-info me-2" size={16} />
-                    {type.product}
+                    {type.name}
                   </div>
                   <div className="d-flex align-items-center ms-auto">
                     <div

@@ -8,7 +8,7 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";  
 
 const validationSchema = yup.object({
-  source_name : yup 
+  name : yup 
                 .string()
                 .trim()
                 .required("Data Source is required")
@@ -24,7 +24,7 @@ const EditDataSourceModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
   useEffect(() => {
     if (isOpen && editState) {
       reset({
-        source_name: editState.source_name, 
+        name: editState.name, 
       });
     }
   }, [isOpen, editState, reset]);
@@ -32,25 +32,25 @@ const EditDataSourceModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
   const handleFormSubmit = async (data) => {
     try {
       const requestData = {
-        source_name: data.source_name, 
+        name: data.name, 
       };
 
-      const response = await axios.patch(`${import.meta.env.VITE_API_URL}/datasource/${editState.id}`, requestData, {
+      const response = await axios.patch(`${import.meta.env.VITE_API_URL}/data-source/${editState.id}`, requestData, {
         headers: {
-            "Content-Type": "application/x-www-form-urlencoded" ,
+            "Content-Type": "application/json" ,
             'Authorization': `Bearer ${token}`, 
         },
       });
 
-      if (response.data.success) {
-        toast.success("Data Source updated successfully!" , {autoClose: 1500});
+      if (response.data.status) {
+        toast.success(response.data?.message || "Data Source updated successfully!" , {autoClose: 1500});
         onSubmit({ ...editState, ...requestData });
         setIsOpen(false);
       } else {
         toast.error(response.data.message || "Failed to update Source Name." , {autoClose: 1500});
       }
     } catch (error) {
-      toast.error("An error occurred while updating the Source Name.", {autoClose: 1500});
+      toast.error(error.response.data?.message || "An error occurred while updating the Source Name.", {autoClose: 1500});
     }
   };
 
@@ -66,7 +66,7 @@ const EditDataSourceModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
           <Form.Group controlId="formStateName" className="mb-3">
             <Form.Label className="text-muted mb-0">Data Source</Form.Label>
             <Controller
-              name="source_name"
+              name="name"
               control={control}
               rules={{ required: "Data Source is required" }}
               render={({ field }) => (
@@ -74,11 +74,11 @@ const EditDataSourceModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
                   <Form.Control
                     type="text"
                     {...field}
-                    isInvalid={!!errors.source_name}
+                    isInvalid={!!errors.name}
                   />
-                  {errors.source_name && (
+                  {errors.name && (
                     <Form.Control.Feedback type="invalid">
-                      {errors.source_name.message}
+                      {errors.name.message}
                     </Form.Control.Feedback>
                   )}
                 </>

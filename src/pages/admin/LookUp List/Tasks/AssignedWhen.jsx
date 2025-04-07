@@ -66,17 +66,16 @@ const AssignedWhen = () => {
   
     if (confirmDelete.isConfirmed) {
       try {
-        await axios.delete(`${import.meta.env.VITE_API_URL}/assigned/${itemId}`, {
+        const response = await axios.delete(`${import.meta.env.VITE_API_URL}/assigned/${itemId}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           }
         });
         
         setAssignedItems(assignedItems.filter((item) => item.id !== itemId));
-        toast.success("Assigned item deleted successfully!", { autoClose: 1500 });
+        toast.success(response.data?.message || "Assigned item deleted successfully!", { autoClose: 1500 });
       } catch (error) {
-        console.error("Error object:", error?.message);
-        const errorMessage = error?.message;
+        const errorMessage = error?.response.data?.message;
         toast.error(errorMessage, { autoClose: 1500 });
       }
     } else if (confirmDelete.dismiss === Swal.DismissReason.cancel) {

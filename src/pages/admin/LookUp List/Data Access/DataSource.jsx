@@ -67,13 +67,13 @@ const DataSource = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`${import.meta.env.VITE_API_URL}/datasource/${datasourceId}`, {
+          const response = await axios.delete(`${import.meta.env.VITE_API_URL}/data-source/${datasourceId}`, {
             headers : {
               'Authorization': `Bearer ${token}`, 
             }
           });
           setDataSource(datasource.filter((datasource) => datasource.id !== datasourceId));
-          toast.success("Data Source deleted successfully!", { autoClose: 1500 });
+          toast.success(response.data?.message || "Data Source deleted successfully!", { autoClose: 1500 });
         } catch (error) {
           toast.error("Failed to delete Data Source. Please try again.", { autoClose: 1500 });
         }

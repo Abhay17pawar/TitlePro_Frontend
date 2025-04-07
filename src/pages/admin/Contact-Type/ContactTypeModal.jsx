@@ -7,7 +7,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup"
 
 const validationSchema = yup.object({
-  contact_type : yup
+  name : yup
                  .string()
                  .trim()
                  .required("Contact Type is required")
@@ -22,25 +22,23 @@ const AddContactTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
 
   const handleFormSubmit = async (data) => {
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/contact-types`, data, {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/contact-type`, data, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
 
-      const result = response.data;
-
-      if (result.success) {
-        toast.success("Contact Type added successfully!", { autoClose: 1500 });
-        onSubmit(result.data);
+      if (response.data?.status) {
+        toast.success(response.data?.message || "Contact Type added successfully!", { autoClose: 1500 });
+        onSubmit(response.data?.data);
         setIsOpen(false);
         reset();
       } else {
         toast.error(result.message || "Failed to add contact type.");
       }
     } catch (error) {
-      toast.error("An error occurred while adding contact type.");
+      toast.error(error.response.data?.message || "An error occurred while adding contact type.");
     }
   };
 
@@ -54,7 +52,7 @@ const AddContactTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
           <Form.Group controlId="formContactType" className="mb-3">
             <Form.Label className="text-muted">Contact Type</Form.Label>
             <Controller
-              name="contact_type"
+              name="name"
               control={control}
               rules={{ required: "Contact Type is required" }}
               render={({ field }) => (
@@ -63,11 +61,11 @@ const AddContactTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
                     type="text"
                     {...field}
                     value={field.value || ''}  // Ensure the value is always a defined string
-                    isInvalid={!!errors.contact_type}
+                    isInvalid={!!errors.name}
                   />
-                  {errors.contact_type && (
+                  {errors.name && (
                     <Form.Control.Feedback type="invalid">
-                      {errors.contact_type.message}
+                      {errors.name.message}
                     </Form.Control.Feedback>
                   )}
                 </>

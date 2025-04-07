@@ -12,7 +12,7 @@ const EditWorkflow = ({ isOpen, setIsOpen, onSubmit, editworkflow }) => {
   useEffect(() => {
     if (isOpen && editworkflow) {
       reset({
-        work_name: editworkflow.work_name, 
+        name: editworkflow.name, 
       });
     }
   }, [isOpen, editworkflow, reset]);
@@ -20,24 +20,24 @@ const EditWorkflow = ({ isOpen, setIsOpen, onSubmit, editworkflow }) => {
   const handleFormSubmit = async (data) => {
     try {
       const requestData = {
-        work_name: data.work_name, 
+        name: data.name, 
       };
   
-      const response = await axios.patch(`${import.meta.env.VITE_API_URL}/workflows/${editworkflow.id}`, requestData , {
+      const response = await axios.patch(`${import.meta.env.VITE_API_URL}/workflow/${editworkflow.id}`, requestData , {
         headers : {
         'Authorization': `Bearer ${token}`, 
         }
       });
   
-      if (response.data.success) {
-        toast.success("Workflow Group updated successfully!", { autoClose: 1500 });
+      if (response.data.status) {
+        toast.success(response.data?.message || "Workflow Group updated successfully!", { autoClose: 1500 });
         onSubmit({ ...editworkflow, ...requestData });
         setIsOpen(false);
       } else {
         toast.error(response.data.message || "Failed to update Workflow Group.", { autoClose: 1500 });
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while updating the Workflow Group.";
+      const errorMessage = error.response?.data?.message || "An error occurred while updating the Workflow Group.";
       toast.error(errorMessage, { autoClose: 1500 });
     }
   };  
@@ -53,7 +53,7 @@ const EditWorkflow = ({ isOpen, setIsOpen, onSubmit, editworkflow }) => {
           <Form.Group controlId="formStateName" className="mb-3">
             <Form.Label className="text-muted mb-0">Workflow Group</Form.Label>
             <Controller
-              name="work_name"
+              name="name"
               control={control}
               rules={{ required: "Workflow Group is required" }}
               render={({ field }) => (
@@ -62,11 +62,11 @@ const EditWorkflow = ({ isOpen, setIsOpen, onSubmit, editworkflow }) => {
                     type="text"
                     {...field}
                     value={field.value || ""}
-                    isInvalid={!!errors.work_name}
+                    isInvalid={!!errors.name}
                   />
-                  {errors.work_name && (
+                  {errors.name && (
                     <Form.Control.Feedback type="invalid">
-                      {errors.work_name.message}
+                      {errors.name.message}
                     </Form.Control.Feedback>
                   )}
                 </>

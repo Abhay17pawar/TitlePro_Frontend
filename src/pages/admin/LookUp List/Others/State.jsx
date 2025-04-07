@@ -71,16 +71,16 @@ const State = () => {
 
     if (confirmDelete.isConfirmed) {
       try {
-        await axios.delete(`${import.meta.env.VITE_API_URL}/states/${stateId}`, {
+        const response = await axios.delete(`${import.meta.env.VITE_API_URL}/state/${stateId}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
         });
 
         setStates(states.filter((state) => state.id !== stateId)); // Remove the state from the list
-        toast.success("State deleted successfully!", { autoClose: 1500 });
+        toast.success(response.data?.message || "State deleted successfully!", { autoClose: 1500 });
       } catch (error) {
-        const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while deleting State.";
+        const errorMessage = error.response?.data?.message || "An error occurred while deleting State.";
         toast.error(errorMessage, { autoClose: 1500 });
       }
     } else if (confirmDelete.dismiss === Swal.DismissReason.cancel) {

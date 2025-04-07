@@ -4,9 +4,12 @@ import { FaTachometerAlt, FaClipboardList, FaTasks, FaChartBar, FaCalculator, Fa
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Swal from 'sweetalert2';
+import axios from 'axios'; 
+import { useAuth } from "../Context/AuthContext"; 
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const { token } = useAuth(); 
 
   const handleSignOut = () => {
     Swal.fire({
@@ -20,10 +23,48 @@ const Navbar = () => {
       cancelButtonText: "Cancel",
     }).then((result) => {
       if (result.isConfirmed) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        navigate("/"); 
-        window.location.reload();
+        // Get the token from context or localStorage
+        const userToken = token || localStorage.getItem("token");
+
+        if (userToken) {
+          axios.post(
+            `${import.meta.env.VITE_API_URL}/logout`, 
+            {}, 
+            { 
+              headers: { 
+                'Authorization': `Bearer ${userToken}` 
+              } 
+            }
+          )
+          .then(response => {
+            if (response.status === 200) {
+              // Clear localStorage
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+
+              navigate("/"); 
+              window.location.reload();
+            } else {
+              Swal.fire("Error", "There was an issue logging you out. Please try again.", "error");
+            }
+          })
+          .catch(error => {
+            if (error.response && error.response.status === 401) {
+              // Token is expired or invalid
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+
+              Swal.fire("Session Expired", "Your session has expired. Please log in again.", "warning");
+              navigate("/"); // Redirect to login page
+            } else {
+              console.error("Error during logout:", error);
+              Swal.fire("Error", "An error occurred while logging out. Please try again later.", "error");
+            }
+          });
+        } else {
+          // If no token found in localStorage or context
+          Swal.fire("Error", "No session found. You are not logged in.", "error");
+        }
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         Swal.fire("Cancelled", "You are still logged in!", "info");
       }
@@ -52,7 +93,7 @@ const Navbar = () => {
         {/* Navbar Links */}
         <div className="collapse navbar-collapse justify-content-center" id="navbarNav">
           <ul className="navbar-nav">
-            {[
+            {[ 
               { path: "/dashboard", icon: <FaTachometerAlt />, label: "Dashboard" },
               { path: "/order", icon: <FaClipboardList />, label: "Orders" },
               { path: "/task", icon: <FaTasks />, label: "Tasks" },
@@ -95,7 +136,7 @@ const Navbar = () => {
             <Dropdown.Item as={NavLink} to="/settings">Settings</Dropdown.Item>
             <Dropdown.Divider />
             <Dropdown.Item onClick={() => handleSignOut()}>Sign out</Dropdown.Item>
-            </DropdownButton>
+          </DropdownButton>
         </div>
       </div>
     </nav>

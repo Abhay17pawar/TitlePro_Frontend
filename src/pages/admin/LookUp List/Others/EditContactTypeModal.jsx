@@ -8,7 +8,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 
 // Validation schema using Yup
 const validationSchema = yup.object({
-  contact_type: yup
+  name: yup
     .string()
     .trim()
     .required("Contact Type is required")
@@ -23,7 +23,7 @@ const EditContactType = ({ isOpen, setIsOpen, onSubmit, editState, token }) => {
   useEffect(() => {
     if (isOpen && editState) {
       reset({
-        contact_type: editState.contact_type,
+        name: editState.name,
       });
     }
   }, [isOpen, editState, reset]);
@@ -31,25 +31,25 @@ const EditContactType = ({ isOpen, setIsOpen, onSubmit, editState, token }) => {
   const handleFormSubmit = async (data) => {
     try {
       const requestData = {
-        contact_type: data.contact_type,
+        name: data.name,
       };
 
-      const response = await axios.patch(`${import.meta.env.VITE_API_URL}/contact-types/${editState.id}`, requestData, {
+      const response = await axios.patch(`${import.meta.env.VITE_API_URL}/contact-type/${editState.id}`, requestData, {
         headers: {
           "Content-Type": "application/json",
           'Authorization': `Bearer ${token}`, // Pass the token here
         },
       });
 
-      if (response.data.success) {
-        toast.success("Contact Type updated successfully!", { autoClose: 1500 });
+      if (response.data.status) {
+        toast.success(response.data?.message || "Contact Type updated successfully!", { autoClose: 1500 });
         onSubmit({ ...editState, ...requestData });
         setIsOpen(false);
       } else {
         toast.error(response.data.message || "Failed to update Contact Type.", { autoClose: 1500 });
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while updating Contact Type.";
+      const errorMessage = error.response?.data?.message || "An error occurred while updating Contact Type.";
       toast.error(errorMessage, { autoClose: 1500 });
     }
   };
@@ -66,7 +66,7 @@ const EditContactType = ({ isOpen, setIsOpen, onSubmit, editState, token }) => {
           <Form.Group controlId="formStateName" className="mb-3">
             <Form.Label className="text-muted mb-0">Contact Type</Form.Label>
             <Controller
-              name="contact_type"
+              name="name"
               control={control}
               rules={{ required: "Contact Type is required" }}
               render={({ field }) => (
@@ -74,11 +74,11 @@ const EditContactType = ({ isOpen, setIsOpen, onSubmit, editState, token }) => {
                   <Form.Control
                     type="text"
                     {...field}
-                    isInvalid={!!errors.contact_type}
+                    isInvalid={!!errors.name}
                   />
-                  {errors.contact_type && (
+                  {errors.name && (
                     <Form.Control.Feedback type="invalid">
-                      {errors.contact_type.message}
+                      {errors.name.message}
                     </Form.Control.Feedback>
                   )}
                 </>

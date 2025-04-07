@@ -24,17 +24,15 @@ export default function WorkflowGroup() {
   const fetchAllworkflow = async () => {
     try {
 
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/workflows`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/workflow`, {
         headers : {
           'Authorization': `Bearer ${token}`, 
         }
       });
 
-      const { data } = response;
-
-      if (data.success && Array.isArray(data.data)) {
-        setworkflowTypes(data.data);
-        setworkflow(data.data); // Ensure workflow state is updated for pagination
+      if (response.data.status === 200 && Array.isArray(response.data.data)) {
+        setworkflowTypes(response.data.data);
+        setworkflow(response.data.data); // Ensure workflow state is updated for pagination
       } else {
         setworkflowTypes([]);
         setworkflow([]);
@@ -75,7 +73,7 @@ export default function WorkflowGroup() {
     setIsEditOpen(false); // Close modal after editing
   };
 
-  const handleDeleteWorkflow = async (transactionId) => {
+  const handleDeleteWorkflow = async (workflowId) => {
     const confirmDelete = await Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -89,21 +87,21 @@ export default function WorkflowGroup() {
   
     if (confirmDelete.isConfirmed) {
       try {
-        const response = await axios.delete(`${import.meta.env.VITE_API_URL}/workflows/${transactionId}` , {
+        const response = await axios.delete(`${import.meta.env.VITE_API_URL}/workflow/${workflowId}` , {
           headers : {
             'Authorization': `Bearer ${token}`, 
           }
         });
         
-        if (response.data.success) {
-          setworkflowTypes(workflowTypes.filter(transaction => transaction.id !== transactionId));
-          setworkflow(workflow.filter(transaction => transaction.id !== transactionId));
-          toast.success("Workflow Group deleted successfully.", { autoClose: 1500 });
+        if (response.data.status) {
+          setworkflowTypes(workflowTypes.filter(transaction => transaction.id !== workflowId));
+          setworkflow(workflow.filter(transaction => transaction.id !== workflowId));
+          toast.success(response.data?.message || "Workflow Group deleted successfully.", { autoClose: 1500 });
         } else {
           toast.error("Failed to delete Workflow Group.", { autoClose: 1500 });
         }
       }catch (error) {
-        const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while deleting Workflow Group.";
+        const errorMessage = error.response?.data?.message || "An error occurred while deleting Workflow Group.";
         toast.error(errorMessage, { autoClose: 1500 });
       }
     } else if (confirmDelete.dismiss === Swal.DismissReason.cancel) {
@@ -195,11 +193,11 @@ export default function WorkflowGroup() {
                     to={`/details/${workflow.id}`} 
                     style={{ textDecoration: 'none', color: 'info' }} 
                   >
-                    {workflow.work_name}
+                    {workflow.name}
                   </Link>
                 </td>
-                  <td className="text-muted">{JSON.parse(localStorage.getItem("user"))?.name}</td>
-                  <td className="text-muted">{workflow.CreatedOn}</td>
+                  <td className="text-muted">{workflow.created_by.name}</td>
+                  <td className="text-muted">{workflow.created_at}</td>
                   <td className="text-muted">{workflow.LastModifyOn}</td>
                   <td className="text-muted">
                     <div className="d-flex align-items-center ms-auto">

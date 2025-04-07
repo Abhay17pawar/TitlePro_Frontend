@@ -8,7 +8,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup"
 
 const validationSchema = yup.object({
-  transaction_type : yup
+  name : yup
                  .string()
                  .trim()
                  .required("Transaction Type is required")
@@ -24,7 +24,7 @@ const EditTransactionTypeModal = ({ isOpen, setIsOpen, onSubmit, editTransaction
   useEffect(() => {
     if (isOpen && editTransactionType) {
       reset({
-        transaction_type: editTransactionType.transaction_name, // Populate with existing transaction name
+        name: editTransactionType.name, // Populate with existing transaction name
       });
     }
   }, [isOpen, editTransactionType, reset]);
@@ -32,24 +32,24 @@ const EditTransactionTypeModal = ({ isOpen, setIsOpen, onSubmit, editTransaction
   const handleFormSubmit = async (data) => {
     try {
       const requestData = {
-        transaction_name: data.transaction_type, // Only update transaction type
+        name: data.name, // Only update transaction type
       };
 
-      const response = await axios.patch(`${import.meta.env.VITE_API_URL}/transactions/${editTransactionType.id}`, requestData, {
+      const response = await axios.patch(`${import.meta.env.VITE_API_URL}/transaction-type/${editTransactionType.id}`, requestData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (response.data.success) {
-        toast.success("Transaction Type updated successfully!", { autoClose: 1500 });
+      if (response.data.status) {
+        toast.success(response.data?.message || "Transaction Type updated successfully!", { autoClose: 1500 });
         onSubmit({ ...editTransactionType, ...requestData }); // Pass the updated contact info
         setIsOpen(false); // Close the modal after submitting
       } else {
         toast.error("Failed to update transaction type.", { autoClose: 1500 });
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while updating transaction type.";
+      const errorMessage = error.response?.data?.message || "An error occurred while updating transaction type.";
       toast.error(errorMessage, { autoClose: 1500 });
     }
   };
@@ -66,7 +66,7 @@ const EditTransactionTypeModal = ({ isOpen, setIsOpen, onSubmit, editTransaction
           <Form.Group controlId="formTransactionType" className="mb-3">
             <Form.Label className="text-muted mb-0">Transaction Type</Form.Label>
             <Controller
-              name="transaction_type"
+              name="name"
               control={control}
               rules={{ required: "Transaction Type is required" }}
               render={({ field }) => (
@@ -75,11 +75,11 @@ const EditTransactionTypeModal = ({ isOpen, setIsOpen, onSubmit, editTransaction
                     type="text"
                     {...field}
                     value={field.value || ""}
-                    isInvalid={!!errors.transaction_type}
+                    isInvalid={!!errors.name}
                   />
-                  {errors.transaction_type && (
+                  {errors.name && (
                     <Form.Control.Feedback type="invalid">
-                      {errors.transaction_type.message}
+                      {errors.name.message}
                     </Form.Control.Feedback>
                   )}
                 </>

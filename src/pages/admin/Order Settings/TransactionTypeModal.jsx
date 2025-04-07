@@ -6,48 +6,61 @@ import Select from "react-select";
 import axios from "axios";
 import { useAuth } from "../../../Context/AuthContext";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup"
+import * as yup from "yup";
 
+// Validation schema using yup
 const validationSchema = yup.object({
-  transaction_type : yup
-                 .string()
-                 .trim()
-                 .required("Transaction Type is required")
-                 .matches(/^[^\d]*$/, "Transaction Type must not contain any digits")
+  name: yup
+    .string()
+    .trim()
+    .required("Transaction Type is required")
+    .matches(/^[^\d]*$/, "Transaction Type must not contain any digits")
 });
 
 const TransactionTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
   const { control, handleSubmit, reset, formState: { errors } } = useForm({
-    resolver : yupResolver(validationSchema)
+    resolver: yupResolver(validationSchema)
   });
 
-  const [transactionType, settransactionType] = useState([]); // Store products
-  const [selectedTransactionType, setselectedTransactionType] = useState(null); // Store selected product
+  const [transactionType, setTransactionType] = useState([]); // Store product types
+  const [selectedTransactionType, setSelectedTransactionType] = useState(null); // Store selected product
   const { token } = useAuth();
 
   // Fetch product types when modal opens
   useEffect(() => {
     if (isOpen) {
-      axios.get(`${import.meta.env.VITE_API_URL}/products`, {
-        headers : {
-          'Authorization': `Bearer ${token}`, 
+      axios.get(`${import.meta.env.VITE_API_URL}/product`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
         }
       })
         .then(response => {
-          const productsArray = response.data?.data || []; // Ensure correct array
-          const products = productsArray.map(product => ({
-            value: product.id,  // Store product ID
-            label: product.product // Store product name
-          }));
-
-          settransactionType(products);
+          // Log the response for debugging
+          console.log("API Response:", response);
+  
+          // Ensure response.data?.data is an array and not empty
+          const productsArray = Array.isArray(response.data?.data) ? response.data.data : [];
+  
+          // Check if the array is not empty
+          if (productsArray.length > 0) {
+            const products = productsArray.map(product => ({
+              value: product.id,  // Ensure product has an id
+              label: product.name   // Ensure product has a name
+            }));
+  
+            setTransactionType(products);
+          } else {
+            console.error("No products found or invalid data structure.");
+            toast.error("No products found or invalid response structure.");
+          }
         })
         .catch(error => {
           console.error("Error fetching products:", error);
           toast.error("Failed to fetch product types.");
         });
     }
-  }, [isOpen]);
+  }, [isOpen, token]);
+  
 
   // Handle form submission
   const handleFormSubmit = async (data) => {
@@ -58,30 +71,28 @@ const TransactionTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
       }
 
       const requestData = {
-        product_name: selectedTransactionType.label,  
-        transaction_name: data.transaction_type, 
-        productId: selectedTransactionType.value,  
+        name: data.name, 
+        product_id: selectedTransactionType.value,  // Use the selected product ID
       };
 
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/transactions`, requestData, {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/transaction-type`, requestData, {
         headers: {
           "Content-Type": "application/json",
           'Authorization': `Bearer ${token}`
         },
       });
 
-      const result = response.data;
-      if (result.success) {
-        toast.success("Transaction Type added successfully!", { autoClose: 1500 });
+      if (response.data.status) {
+        toast.success(response.data.message || "Transaction Type added successfully!", { autoClose: 1500 });
         onSubmit(requestData);
         setIsOpen(false);
         reset();
-        setselectedTransactionType(null); 
+        setSelectedTransactionType(null); // Clear the selected product
       } else {
         toast.error("Failed to add transaction type.", { autoClose: 1500 });
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while adding Transaction Type.";
+      const errorMessage = error.response?.data?.message || "An error occurred while adding Transaction Type.";
       toast.error(errorMessage, { autoClose: 1500 });
     }
   };
@@ -93,20 +104,22 @@ const TransactionTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit(handleFormSubmit)}>
+          {/* Product Type Selection */}
           <Form.Group controlId="formProductType" className="mb-3">
             <Form.Label className="text-muted mb-0">Product Type</Form.Label>
             <Select
               options={transactionType}
               value={selectedTransactionType}
-              onChange={(selected) => setselectedTransactionType(selected)}
+              onChange={(selected) => setSelectedTransactionType(selected)}
               placeholder="Select a product"
             />
           </Form.Group>
 
+          {/* Transaction Type Field */}
           <Form.Group controlId="formTransactionType" className="mb-3">
             <Form.Label className="text-muted mb-0">Transaction Type</Form.Label>
             <Controller
-              name="transaction_type"
+              name="name"
               control={control}
               rules={{ required: "Transaction Type is required" }}
               render={({ field }) => (
@@ -115,11 +128,11 @@ const TransactionTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
                     type="text"
                     {...field}
                     value={field.value || ""}
-                    isInvalid={!!errors.transaction_type}
+                    isInvalid={!!errors.name}
                   />
-                  {errors.transaction_type && (
+                  {errors.name && (
                     <Form.Control.Feedback type="invalid">
-                      {errors.transaction_type.message}
+                      {errors.name.message}
                     </Form.Control.Feedback>
                   )}
                 </>
@@ -127,6 +140,7 @@ const TransactionTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
             />
           </Form.Group>
 
+          {/* Submit Button */}
           <Button
             style={{ border: "none", background: "linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)" }}
             className="w-100"

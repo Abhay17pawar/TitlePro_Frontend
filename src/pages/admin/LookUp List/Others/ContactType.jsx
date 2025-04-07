@@ -70,13 +70,13 @@ const ContactType = () => {
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
-            await axios.delete(`${import.meta.env.VITE_API_URL}/contact-types/${productId}`,{
+            const response = await axios.delete(`${import.meta.env.VITE_API_URL}/contact-type/${productId}`,{
               headers : {
                 'Authorization': `Bearer ${token}` 
               }
             });
             setContactTypes(contactTypes.filter((contact) => contact.id !== productId));
-            toast.success("Contact Type deleted successfully!", { autoClose: 1500 });
+            toast.success(response.data?.message || "Contact Type deleted successfully!", { autoClose: 1500 });
           } catch (error) {
             const errorMessage = error.response?.data?.message || "An error occurred while deleting Contact Type.";
             toast.error(errorMessage, { autoClose: 1500 });

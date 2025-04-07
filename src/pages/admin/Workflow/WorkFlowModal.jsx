@@ -11,24 +11,22 @@ const WorkflowModal = ({ isOpen, setIsOpen, onSubmit }) => {
   const handleFormSubmit = async (data) => {
     try {
       
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/workflows`, data , {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/workflow`, data , {
         headers : {
           'Authorization': `Bearer ${token}`, 
         }
       });
 
-      const result = response.data;
-
-      if (result.success) {
-        toast.success("Workflow Group added successfully!", { autoClose: 1500 });
-        onSubmit(result.data); 
+      if (response.data.status) {
+        toast.success(response.data.message || "Workflow Group added successfully!", { autoClose: 1500 });
+        onSubmit(response.data.data); 
         setIsOpen(false); // Close modal after success
         reset(); // Reset form fields
       } else {
-        toast.error(result.message || "Failed to add Workflow Group." , {autoClose : 1500});
+        toast.error(response.data.message || "Failed to add Workflow Group." , {autoClose : 1500});
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while adding Workflow Group.";
+      const errorMessage = error.response?.data?.message || "An error occurred while adding Workflow Group.";
       toast.error(errorMessage, { autoClose: 1500 });
     }
   };
@@ -43,7 +41,7 @@ const WorkflowModal = ({ isOpen, setIsOpen, onSubmit }) => {
         <Form.Group controlId="formProductType" className="mb-3">
         <Form.Label className="text-muted">Workflow Group</Form.Label>
         <Controller
-          name="work_name" 
+          name="name" 
           control={control}
           rules={{ required: "Workflow Group is required" }}
           render={({ field }) => (
@@ -52,11 +50,11 @@ const WorkflowModal = ({ isOpen, setIsOpen, onSubmit }) => {
                 type="text"
                 {...field}
                 value={field.value || ''} // Ensure the value is always a defined string
-                isInvalid={!!errors.work_name} // Update the error handling here
+                isInvalid={!!errors.name} // Update the error handling here
               />
-              {errors.work_name && (
+              {errors.name && (
                 <Form.Control.Feedback type="invalid">
-                  {errors.work_name.message}
+                  {errors.name.message}
                 </Form.Control.Feedback>
               )}
             </>

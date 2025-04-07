@@ -23,17 +23,15 @@ export default function TransactionType() {
 
   const fetchAlltransactionType = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/transactions`,{
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/transaction-type`,{
         headers : {
           'Authorization': `Bearer ${token}`, 
         }
       });
 
-      const { data } = response;
-
-      if (data.success && Array.isArray(data.data)) {
-        settransaction(data.data);
-        settransactionType(data.data); // Ensure transactionType state is updated for pagination
+      if (response.data.status = 200 && Array.isArray(response.data.data)) {
+        settransaction(response.data.data);
+        settransactionType(response.data.data); // Ensure transactionType state is updated for pagination
       } else {
         settransaction([]);
         settransactionType([]);
@@ -91,21 +89,21 @@ export default function TransactionType() {
   
     if (confirmDelete.isConfirmed) {
       try {
-        const response = await axios.delete(`${import.meta.env.VITE_API_URL}/transactions/${transactionId}`, {
+        const response = await axios.delete(`${import.meta.env.VITE_API_URL}/transaction-type/${transactionId}`, {
           headers : {
             'Authorization': `Bearer ${token}`, 
           }
         });
         
-        if (response.data.success) {
+        if (response.data.status) {
           settransaction(transaction.filter(transaction => transaction.id !== transactionId));
           settransactionType(transactionType.filter(transaction => transaction.id !== transactionId));
-          toast.success("Transaction Type deleted successfully.", { autoClose: 1500 });
+          toast.success(response.data?.message || "Transaction Type deleted successfully.", { autoClose: 1500 });
         } else {
           toast.error("Failed to delete Transaction Type.", { autoClose: 1500 });
         }
       }catch (error) {
-        const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while deleting transaction Type.";
+        const errorMessage = error.response?.data?.message || "An error occurred while deleting transaction Type.";
         toast.error(errorMessage, { autoClose: 1500 });
       }
     } else if (confirmDelete.dismiss === Swal.DismissReason.cancel) {
@@ -181,35 +179,39 @@ export default function TransactionType() {
               </tr>
             </thead>
             <tbody>
-              {currenttransactionType.map((transactiontype, index) => (
-                <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-light"}>
-                  <td className="text-muted">{transactiontype.product_name}</td>
-                  <td className="text-muted">{transactiontype.transaction_name}</td>
-                  <td className="text-muted">{JSON.parse(localStorage.getItem("user"))?.name}</td>
-                  <td className="text-muted">
-                    <div className="d-flex align-items-center ms-auto">
-                      <div
-                        className="d-flex justify-content-center align-items-center p-2 bg-primary bg-opacity-10 text-primary me-2 rounded-2"
-                        style={{ cursor: 'pointer', width: '1.75rem', height: '1.75rem' }}
-                        onClick={() => {
-                          seteditTransactionType(transactiontype);
-                          setIsEditOpen(true); // Open Edit Modal
-                        }}
-                      >
-                        <FaRegPenToSquare />
-                      </div>
-                      <div
-                        className="d-flex justify-content-center align-items-center p-2 bg-danger bg-opacity-10 text-danger rounded-2"
-                        style={{ cursor: 'pointer', width: '1.75rem', height: '1.75rem' }}
-                        onClick={() => handleDeleteTransactionType(transactiontype.id)}
-                      >
-                        <RiDeleteBin6Line />
-                      </div>
+            {currenttransactionType.map((transactiontype, index) => (
+              <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-light"}>
+                {/* Check if transactiontype.product exists and has a name */}
+                <td className="text-muted">
+                  {transactiontype.product && transactiontype.product.name ? transactiontype.product.name : "N/A"}
+                </td>
+                <td className="text-muted">{transactiontype.name}</td>
+                <td className="text-muted">{transactiontype.created_by?.name}</td>
+                <td className="text-muted">
+                  <div className="d-flex align-items-center ms-auto">
+                    <div
+                      className="d-flex justify-content-center align-items-center p-2 bg-primary bg-opacity-10 text-primary me-2 rounded-2"
+                      style={{ cursor: 'pointer', width: '1.75rem', height: '1.75rem' }}
+                      onClick={() => {
+                        seteditTransactionType(transactiontype);
+                        setIsEditOpen(true); // Open Edit Modal
+                      }}
+                    >
+                      <FaRegPenToSquare />
                     </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+                    <div
+                      className="d-flex justify-content-center align-items-center p-2 bg-danger bg-opacity-10 text-danger rounded-2"
+                      style={{ cursor: 'pointer', width: '1.75rem', height: '1.75rem' }}
+                      onClick={() => handleDeleteTransactionType(transactiontype.id)}
+                    >
+                      <RiDeleteBin6Line />
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+
           </table>
         </div>
 

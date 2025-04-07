@@ -8,7 +8,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup"
 
 const validationSchema = yup.object({
-  assigned_name : yup
+  name : yup
                  .string()
                  .trim()
                  .required("Assigned When is required")
@@ -23,7 +23,7 @@ const EditAssignedModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
   useEffect(() => {
     if (isOpen && editState) {
       reset({
-        assigned_name: editState.assigned_name, 
+        name: editState.name, 
       });
     }
   }, [isOpen, editState, reset]);
@@ -31,7 +31,7 @@ const EditAssignedModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
   const handleFormSubmit = async (data) => {
     try {
       const requestData = {
-        assigned_name: data.assigned_name, 
+        name: data.name, 
       };
   
       const response = await axios.patch(`${import.meta.env.VITE_API_URL}/assigned/${editState.id}`, requestData, {
@@ -40,15 +40,15 @@ const EditAssignedModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
         },
       });
   
-      if (response.data.success) {
-        toast.success("Assigned item updated successfully!", { autoClose: 1500 });
+      if (response.data.status) {
+        toast.success(response.data?.message || "Assigned item updated successfully!", { autoClose: 1500 });
         onSubmit({ ...editState, ...requestData });
         setIsOpen(false);
       } else {
         toast.error(response.data.message || "Failed to update assigned item.", { autoClose: 1500 });
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while updating the assigned item.";
+      const errorMessage = error.response?.data?.message || "An error occurred while updating the assigned item.";
       toast.error(errorMessage, { autoClose: 1500 });
     }
   };  
@@ -65,7 +65,7 @@ const EditAssignedModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
           <Form.Group controlId="formEditAssignedName" className="mb-3">
             <Form.Label className="text-muted mb-0">Assigned When</Form.Label>
             <Controller
-              name="assigned_name"
+              name="name"
               control={control}
               rules={{ required: "Assigned When is required" }}
               render={({ field }) => (
@@ -74,11 +74,11 @@ const EditAssignedModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
                     type="text"
                     {...field}
                     value={field.value || ""}
-                    isInvalid={!!errors.assigned_name}
+                    isInvalid={!!errors.name}
                   />
-                  {errors.assigned_name && (
+                  {errors.name && (
                     <Form.Control.Feedback type="invalid">
-                      {errors.assigned_name.message}
+                      {errors.name.message}
                     </Form.Control.Feedback>
                   )}
                 </>

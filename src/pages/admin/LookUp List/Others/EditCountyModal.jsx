@@ -8,11 +8,11 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";  
 
 const validationSchema = yup.object({
-  county_name : yup 
-                .string()
-                .trim()
-                .required("County name is required")
-                .matches(/^[^\d]*$/, "Contact Type must not contain any digits")
+  name : yup 
+        .string()
+        .trim()
+        .required("County name is required")
+        .matches(/^[^\d]*$/, "Contact Type must not contain any digits")
 });
 
 const EditCountyModal = ({ isOpen, setIsOpen, onSubmit, editCounty }) => {
@@ -25,7 +25,7 @@ const EditCountyModal = ({ isOpen, setIsOpen, onSubmit, editCounty }) => {
   useEffect(() => {
     if (isOpen && editCounty) {
       reset({
-        county_name: editCounty.county_name,  // This should correctly reset the form when opening the modal
+        name: editCounty.name,  // This should correctly reset the form when opening the modal
       });
     }
   }, [isOpen, editCounty, reset]);
@@ -33,25 +33,27 @@ const EditCountyModal = ({ isOpen, setIsOpen, onSubmit, editCounty }) => {
 
   const handleFormSubmit = async (data) => {
     try {
+
       const requestData = {
-        county_name: data.county_name, // Only update county name
+        name: data.name, 
+        state_id: editCounty.state_id
       };
 
-      const response = await axios.patch(`${import.meta.env.VITE_API_URL}/counties/${editCounty.id}`, requestData, {
+      const response = await axios.patch(`${import.meta.env.VITE_API_URL}/county/${editCounty.id}`, requestData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (response.data.success) {
-        toast.success("County updated successfully!", { autoClose: 1500 });
+      if (response.data.status) {
+        toast.success(response.data?.message || "County updated successfully!", { autoClose: 1500 });
         onSubmit({ ...editCounty, ...requestData });
         setIsOpen(false);
       } else {
         toast.error(response.data.message || "Failed to update county.");
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while updating County.";
+      const errorMessage = error.response?.data?.message || "An error occurred while updating County.";
       toast.error(errorMessage, { autoClose: 1500 });
     }
   };
@@ -68,7 +70,7 @@ const EditCountyModal = ({ isOpen, setIsOpen, onSubmit, editCounty }) => {
           <Form.Group controlId="formStateName" className="mb-3">
             <Form.Label className="text-muted mb-0">County Name</Form.Label>
             <Controller
-              name="county_name"
+              name="name"
               control={control}
               rules={{ required: "County Name is required" }}
               render={({ field }) => (
@@ -77,11 +79,11 @@ const EditCountyModal = ({ isOpen, setIsOpen, onSubmit, editCounty }) => {
                     type="text"
                     {...field}
                     value={field.value || ""}
-                    isInvalid={!!errors.county_name}
+                    isInvalid={!!errors.name}
                   />
-                  {errors.county_name && (
+                  {errors.name && (
                     <Form.Control.Feedback type="invalid">
-                      {errors.county_name.message}
+                      {errors.name.message}
                     </Form.Control.Feedback>
                   )}
                 </>

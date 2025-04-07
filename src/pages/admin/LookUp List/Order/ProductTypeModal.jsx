@@ -7,7 +7,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup"
 
 const validationSchema = yup.object({
-  product_name : yup
+  name : yup
                  .string()
                  .trim()
                  .required("Product Type is required")
@@ -23,25 +23,23 @@ const AddProductTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
   const handleFormSubmit = async (data) => {
     try {
 
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/products`, data, {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/product`, data, {
         headers: {
           "Content-Type": "application/json",
           'Authorization': `Bearer ${token}`, 
         },
       });
 
-      const result = response.data;
-
-      if (result.success) {
-        toast.success("Product Type added successfully!", { autoClose: 1500 });
-        onSubmit(result.data); // Pass the new product type to parent
+      if (response.data?.status) {
+        toast.success(response.data?.message || "Product Type added successfully!", { autoClose: 1500 });
+        onSubmit(response.data.data); // Pass the new product type to parent
         setIsOpen(false); // Close modal after success
         reset(); // Reset form fields
       } else {
         toast.error(result.message || "Failed to add product type.");
       }
     } catch (error) {
-      toast.error("An error occurred while adding product type.");
+      toast.error(error.response.data?.message || "An error occurred while adding product type." , {autoClose : 1500});
     }
   };
 
@@ -55,7 +53,7 @@ const AddProductTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
         <Form.Group controlId="formProductType" className="mb-3">
         <Form.Label className="text-muted">Product Type</Form.Label>
         <Controller
-          name="product_name" // Make sure this matches your Sequelize model attribute
+          name="name" // Make sure this matches your Sequelize model attribute
           control={control}
           rules={{ required: "Product Type is required" }}
           render={({ field }) => (
@@ -64,11 +62,11 @@ const AddProductTypeModal = ({ isOpen, setIsOpen, onSubmit }) => {
                 type="text"
                 {...field}
                 value={field.value || ''} // Ensure the value is always a defined string
-                isInvalid={!!errors.product_name} // Update the error handling here
+                isInvalid={!!errors.name} // Update the error handling here
               />
-              {errors.product_name && (
+              {errors.name && (
                 <Form.Control.Feedback type="invalid">
-                  {errors.product_name.message}
+                  {errors.name.message}
                 </Form.Control.Feedback>
               )}
             </>

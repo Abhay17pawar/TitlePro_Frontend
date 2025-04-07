@@ -45,9 +45,6 @@ const County = () => {
             },
          });
 
-         console.log(response?.data);  // Log the API response to check the data
-
-         // Check if response is successful and data is an array
          if (response.data.status === 200 && Array.isArray(response.data.data)) {
             setCounty(response.data.data); // Update state with the response data
          } else {

@@ -17,7 +17,7 @@ const AddContactModal = ({ isOpen, setIsOpen, onSubmit }) => {
   useEffect(() => {
     const fetchContactTypes = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/contact-types`, {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/contact`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -50,7 +50,7 @@ const AddContactModal = ({ isOpen, setIsOpen, onSubmit }) => {
           }
         );
 
-        if (response.data?.success) {
+        if (response.data?.status) {
           const options = response.data.data.map((state) => ({
             value: state.id,
             label: state.state_name,

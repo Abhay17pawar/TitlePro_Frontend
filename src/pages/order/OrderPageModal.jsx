@@ -31,18 +31,16 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
     if (isOpen) {
       const fetchDataSource = async () => {
         try {
-          const response = await axios.get(`${import.meta.env.VITE_API_URL}/datasource`, {
+          const response = await axios.get(`${import.meta.env.VITE_API_URL}/data-source`, {
             headers: {
               'Authorization': `Bearer ${token}`,
             },
           });
-          const { data } = response;
-          console.log("data source " ,data);
 
-          if (data.success && Array.isArray(data.data)) {
-            const options = data.data.map((item) => ({
+          if (response.data.status === 200 && Array.isArray(response.data.data)) {
+            const options = response.data.data.map((item) => ({
               value: item.id,
-              label: item.source_name,
+              label: item.name,
             }));
             setDataSource(options);
           } else {
@@ -62,18 +60,16 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
     if (isOpen) {
       const fetchStates = async () => {
         try {
-          const response = await axios.get(`${import.meta.env.VITE_API_URL}/states`, {
+          const response = await axios.get(`${import.meta.env.VITE_API_URL}/state`, {
             headers: {
               'Authorization': `Bearer ${token}`,
             },
           });
 
-          console.log("states : ", response?.data);
-
-          if (response.data?.success) {
+          if (response.data?.status) {
             const options = response.data.data.map((state) => ({
               value: state.id,
-              label: state.state_name,
+              label: state.name,
             }));
             setStateOptions(options);
           } else {
@@ -93,22 +89,20 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
     if (isOpen) {
       const fetchProducts = async () => {
         try {
-          const response = await axios.get(`${import.meta.env.VITE_API_URL}/products`, {
+          const response = await axios.get(`${import.meta.env.VITE_API_URL}/product`, {
             headers: {
               'Authorization': `Bearer ${token}`,
             },
           });
 
-           console.log("products : ",response?.data);
-
-          if (response.data?.data && Array.isArray(response.data.data)) {
+          if (response.data?.status && Array.isArray(response.data.data)) {
             const options = response.data.data.map((product) => ({
               value: product.id,
-              label: product.product,
+              label: product.name,
             }));
             setProductOptions(options);
           } else {
-            toast.error("Invalid product data received.");
+            toast.error("Invalid product data received." , {autoClose : 1500});
           }
         } catch (error) {
           toast.error("Failed to load product types!", { autoClose: 1500 });
@@ -125,7 +119,7 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
     if (option?.value) {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/transactions/${option.value}`,
+          `${import.meta.env.VITE_API_URL}/transaction-type/${option.value}`,
           {
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -133,10 +127,10 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
           }
         );
 
-        if (response.data?.data && Array.isArray(response.data.data)) {
+        if (response.data?.status && Array.isArray(response.data.data)) {
           const transOptions = response.data.data.map((item) => ({
             value: item.id,
-            label: item.transaction_name,
+            label: item.name,
           }));
           setTransactionOptions(transOptions);
         } else {

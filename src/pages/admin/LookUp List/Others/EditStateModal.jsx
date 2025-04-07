@@ -9,7 +9,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 
 // Define Yup validation schema
 const validationSchema = yup.object({
-  state_name: yup
+  name: yup
     .string()
     .trim()
     .required("State Name is required") 
@@ -26,7 +26,7 @@ const EditStateModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
   useEffect(() => {
     if (isOpen && editState) {
       reset({
-        state_name: editState.state_name, // Populate with existing state name
+        name: editState.name, // Populate with existing state name
       });
     }
   }, [isOpen, editState, reset]);
@@ -34,24 +34,24 @@ const EditStateModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
   const handleFormSubmit = async (data) => {
     try {
       const requestData = {
-        state_name: data.state_name, // Only update state name
+        name: data.name, // Only update state name
       };
 
-      const response = await axios.patch(`${import.meta.env.VITE_API_URL}/states/${editState.id}`, requestData, {
+      const response = await axios.patch(`${import.meta.env.VITE_API_URL}/state/${editState.id}`, requestData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (response.data.success) {
-        toast.success("State updated successfully!", { autoClose: 1500 });
+      if (response.data.status === 200) {
+        toast.success(response.data.message || "State updated successfully!", { autoClose: 1500 });
         onSubmit({ ...editState, ...requestData });
         setIsOpen(false);
       } else {
-        toast.error(response.data.message || "Failed to update state.");
+        toast.error(response.data.message || "Failed to update state." , { autoClose : 1500});
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while updating state.";
+      const errorMessage = error.response?.data?.message || "An error occurred while updating state.";
       toast.error(errorMessage, { autoClose: 1500 });
     }
   };
@@ -68,7 +68,7 @@ const EditStateModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
           <Form.Group controlId="formStateName" className="mb-3">
             <Form.Label className="text-muted mb-0">State Name</Form.Label>
             <Controller
-              name="state_name"
+              name="name"
               control={control}
               render={({ field }) => (
                 <>
@@ -76,11 +76,11 @@ const EditStateModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
                     type="text"
                     {...field}
                     value={field.value || ""}
-                    isInvalid={!!errors.state_name}
+                    isInvalid={!!errors.name}
                   />
-                  {errors.state_name && (
+                  {errors.name && (
                     <Form.Control.Feedback type="invalid">
-                      {errors.state_name.message}
+                      {errors.name.message}
                     </Form.Control.Feedback>
                   )}
                 </>

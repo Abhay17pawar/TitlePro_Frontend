@@ -8,7 +8,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
 const validationSchema = yup.object({
-  product_name: yup
+  name: yup
     .string()
     .trim()
     .required("Product Type is required")
@@ -23,10 +23,10 @@ const EditProductTypeModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
   const { token } = useAuth();
 
   useEffect(() => {
-    // Only reset when editState and editState.product_name are available
+    // Only reset when editState and editState.name are available
     if (isOpen && editState) {
       reset({
-        product_name: editState.product_name || editState.product, // Default to empty string if undefined
+        name: editState.name || editState.product, // Default to empty string if undefined
       });
     }
   }, [isOpen, editState, reset]);
@@ -34,12 +34,12 @@ const EditProductTypeModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
   const handleFormSubmit = async (data) => {
     try {
       const requestData = {
-        product_name: data.product_name, // Only update product name
+        name: data.name, // Only update product name
       };
 
       // Send patch request to update the product type
       const response = await axios.patch(
-        `${import.meta.env.VITE_API_URL}/products/${editState.id}`,
+        `${import.meta.env.VITE_API_URL}/product/${editState.id}`,
         requestData,
         {
           headers: {
@@ -48,15 +48,15 @@ const EditProductTypeModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
         }
       );
 
-      if (response.data.success) {
-        toast.success("Product Type updated successfully!", { autoClose: 1500 });
+      if (response.data.status) {
+        toast.success(response.data?.message || "Product Type updated successfully!", { autoClose: 1500 });
         onSubmit({ ...editState, ...requestData });
         setIsOpen(false); // Close the modal
       } else {
         toast.error(response.data.message || "Failed to update Product Type.");
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while updating Product Type.";
+      const errorMessage = error.response?.data?.message || "An error occurred while updating Product Type.";
       toast.error(errorMessage, { autoClose: 1500 });
     }
   };
@@ -72,18 +72,18 @@ const EditProductTypeModal = ({ isOpen, setIsOpen, onSubmit, editState }) => {
           <Form.Group controlId="formProductName" className="mb-3">
             <Form.Label className="text-muted mb-0">Product Name</Form.Label>
             <Controller
-              name="product_name"
+              name="name"
               control={control}
               render={({ field }) => (
                 <>
                   <Form.Control
                     type="text"
                     {...field}
-                    isInvalid={!!errors.product_name}
+                    isInvalid={!!errors.name}
                   />
-                  {errors.product_name && (
+                  {errors.name && (
                     <Form.Control.Feedback type="invalid">
-                      {errors.product_name.message}
+                      {errors.name.message}
                     </Form.Control.Feedback>
                   )}
                 </>
