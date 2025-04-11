@@ -119,7 +119,7 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
     if (option?.value) {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/transaction-type/${option.value}`,
+          `${import.meta.env.VITE_API_URL}/get_transaction_by_product/${option.value}`,
           {
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -152,7 +152,7 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
     if (option?.value) {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/counties/states/${option.value}`,
+          `${import.meta.env.VITE_API_URL}/get_county_by_state/${option.value}`,
           {
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -163,7 +163,7 @@ const OrderPageModal = ({ isOpen, setIsOpen, onSubmit }) => {
         if (response.data?.data && Array.isArray(response.data.data)) {
           const countyOptions = response.data.data.map((county) => ({
             value: county.id,
-            label: county.county_name,
+            label: county.name,
           }));
           setCountyOptions(countyOptions);
         } else {

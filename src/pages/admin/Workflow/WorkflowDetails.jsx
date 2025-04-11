@@ -22,7 +22,7 @@ export default function WorkflowDetails() {
   useEffect(() => {
     const fetchWorkflow = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/workflows/${id}`,{
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/workflow/${id}`,{
           headers : {
             'Authorization': `Bearer ${token}`, 
           }
@@ -68,7 +68,7 @@ export default function WorkflowDetails() {
       </nav>
 
       <div className="d-flex justify-content-between align-items-center px-3">
-  <h5 className="text-muted">{workflow && workflow.work_name}</h5>
+  <h5 className="text-muted">{workflow && workflow.name}</h5>
   <button onClick={() => setIsAddOpen(true)} // Open Add Modal
   style={{background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)',
   }}

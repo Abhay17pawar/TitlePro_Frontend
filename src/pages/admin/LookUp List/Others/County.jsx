@@ -75,14 +75,14 @@ const County = () => {
 
       if (confirmDelete.isConfirmed) {
          try {
-            await axios.delete(`${import.meta.env.VITE_API_URL}/counties/${countyId}`, {
+           const response =  await axios.delete(`${import.meta.env.VITE_API_URL}/county/${countyId}`, {
                headers: {
                   'Authorization': `Bearer ${token}`,
                },
             });
 
             setCounty(county.filter((c) => c.id !== countyId));
-            toast.success("County deleted successfully!", { autoClose: 1500 });
+            toast.success(response.data?.message || "County deleted successfully!", { autoClose: 1500 });
          } catch (error) {
             const errorMessage = error.response?.data?.message || "An error occurred while deleting County.";
             toast.error(errorMessage, { autoClose: 1500 });

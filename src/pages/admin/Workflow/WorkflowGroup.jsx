@@ -32,7 +32,7 @@ export default function WorkflowGroup() {
 
       if (response.data.status === 200 && Array.isArray(response.data.data)) {
         setworkflowTypes(response.data.data);
-        setworkflow(response.data.data); // Ensure workflow state is updated for pagination
+        setworkflow(response.data.data); 
       } else {
         setworkflowTypes([]);
         setworkflow([]);

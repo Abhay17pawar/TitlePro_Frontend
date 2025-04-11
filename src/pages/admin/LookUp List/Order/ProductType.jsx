@@ -79,9 +79,7 @@ const ProductType = () => {
   const handleEditState = (updatedType) => {
     setproductType(prevTypes => 
       prevTypes.map(type => 
-        type.id === updatedType.id 
-          ? { ...type, product: updatedType.product_name || updatedType.product } 
-          : type
+        type.id === updatedType.id ? updatedType : type
       )
     );
     setIsEditOpen(false);

@@ -17,30 +17,30 @@ const OrdersTable = () => {
   const { token } = useAuth();
   
   // Fetch orders from the API
-  const fetchOrders = async () => {
-    try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/orders`, {
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
+  // const fetchOrders = async () => {
+  //   try {
+  //     const response = await axios.get(`${import.meta.env.VITE_API_URL}/orders`, {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         "Authorization": `Bearer ${token}`,
+  //       },
+  //     });
 
-      if (response.data && response.data.data) {
-        setOrders(response.data.data); // Update the state with fetched orders
-      } else {
-        console.error("No orders found in the response.");
-      }
-    } catch (error) {
-      const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while fetching Order.";
-      toast.error(errorMessage, { autoClose: 1500 });
-    }
-  };
+  //     if (response.data && response.data.data) {
+  //       setOrders(response.data.data); // Update the state with fetched orders
+  //     } else {
+  //       console.error("No orders found in the response.");
+  //     }
+  //   } catch (error) {
+  //     const errorMessage = error.response?.data?.error?.errorMessage || "An error occurred while fetching Order.";
+  //     toast.error(errorMessage, { autoClose: 1500 });
+  //   }
+  // };
 
-  // Fetch orders on component mount
-  useEffect(() => {
-    fetchOrders();
-  }, []);
+  // // Fetch orders on component mount
+  // useEffect(() => {
+  //   fetchOrders();
+  // }, []);
 
   const handleAddOrder = (newOrder) => {
     // Update the state with the new contact type

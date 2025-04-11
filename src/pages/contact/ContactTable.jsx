@@ -35,15 +35,14 @@ const ContactTable = () => {
   // Fetch all contacts
   const fetchAllContacts = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/contacts`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/contact`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      const { data } = response;
-      if (data.success && Array.isArray(data.data)) {
-        setContacts(data.data);
+      console.log(response.data.data)
+      if (response.data.status && Array.isArray(response.data.data)) {
+        setContacts(response.data.data);
       } else {
         setContacts([]);
       }
@@ -70,7 +69,7 @@ const ContactTable = () => {
   const currentContacts = contacts.slice(indexOfFirstContact, indexOfLastContact);
   const totalPages = Math.ceil(contacts.length / contactsPerPage);
 
-  const handleEditTransactionType = (updatedContact) => {
+  const handleEditcontactType = (updatedContact) => {
     // Update the state with the edited contact
     setContacts((prevContacts) =>
       prevContacts.map((contact) =>
@@ -85,7 +84,7 @@ const ContactTable = () => {
     setIsEditOpen(true); // Open edit modal
   };
 
-  const handleDeleteClick = async (transactionId) => {
+  const handleDeleteClick = async (contactId) => {
     const confirmDelete = await Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -99,15 +98,15 @@ const ContactTable = () => {
   
     if (confirmDelete.isConfirmed) {
       try {
-        const response = await axios.delete(`${import.meta.env.VITE_API_URL}/contacts/${transactionId}` , {
+        const response = await axios.delete(`${import.meta.env.VITE_API_URL}/contact/${contactId}` , {
           headers : {
             Authorization: `Bearer ${token}`,
           }
         });
         
-        if (response.data.success) {
-          setContacts(contacts.filter(transaction => transaction.id !== transactionId));
-          toast.success("Contact deleted successfully.", { autoClose: 1500 });
+        if (response.data.status) {
+          setContacts(contacts.filter(contact => contact.id !== contactId));
+          toast.success(response.data.message || "Contact deleted successfully.", { autoClose: 1500 });
         } else {
           toast.error("Failed to delete Contact", { autoClose: 1500 });
         }
@@ -175,7 +174,6 @@ const ContactTable = () => {
                 <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Address</th>
                 <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Phone Number</th>
                 <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Email Address</th>
-                <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Invoice Terms</th>
                 <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Created By</th>
                 <th style={{border: "none",background: 'linear-gradient(180deg, rgba(90,192,242,1) 5%, rgba(14,153,223,1) 99%)' }}  className="text-white fw-normal">Action</th>
               </tr>
@@ -199,7 +197,6 @@ const ContactTable = () => {
                   <td className="text-muted">{contact.address}</td>
                   <td className="text-muted">{contact.phone}</td>
                   <td className="text-muted">{contact.email}</td>
-                  <td className="text-muted">{contact.invoiceTerms} {'Net 30'}</td>
                   <td className="text-muted">{currentUser.name}</td>
                   <td className="text-muted">
                     <div className="d-flex align-items-center ms-auto">
@@ -254,7 +251,7 @@ const ContactTable = () => {
 
       {/* Modals */}
       <AddContactModal isOpen={isOpen} setIsOpen={setIsOpen} onSubmit={handleAddContact} />
-      {isEditOpen && <EditContactModal isOpen={isEditOpen} setIsOpen={setIsEditOpen} onSubmit={handleEditTransactionType} editContact={editContact} />}
+      {isEditOpen && <EditContactModal isOpen={isEditOpen} setIsOpen={setIsEditOpen} onSubmit={handleEditcontactType} editContact={editContact} />}
     </div>
   );
 };
